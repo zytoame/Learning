@@ -1,3 +1,4 @@
+spring的设计模式：单例、工厂、观察者（监听器）、模板方法
 ## Spring Framework
 1. Spring Framework 是一个开源的 **Java/JavaEE 应用开发框架**，它的核心目标是 **简化企业级应用开发**，提供一套 **全面的编程和配置模型**，帮助开发者更高效地构建可维护、可扩展的应用程序。
 2. 系统架构
@@ -19,10 +20,15 @@
 			1. ==实用==![[Pasted image 20250711173003.png]]
 			2. ![[Pasted image 20250711171918.png]]
 	4. 生命周期
-		1. ![[Pasted image 20250711175009.png]]
-		2. ![[Pasted image 20250711175034.png]]
-		3. ![[Pasted image 20250711175059.png]]
-3. 入门案例：
+		1. **Bean创建流程**
+			1. 解析`@Configuration`类
+			2. 创建配置类实例
+			3. 处理配置类的依赖注入（@Resource/@Autowired）
+			4. 调用`@Bean`方法或接口方法（如`addInterceptors`）
+		2. ![[Pasted image 20250711175009.png]]
+		3. ![[Pasted image 20250711175034.png]]
+		4. ![[Pasted image 20250711175059.png]]
+6. 入门案例：
 	1. 导入坐标：pom.xml文件中< groupId>org.springframework< /groupId>  < artifactId>spring-context< /artifactId>  < version>5.2.10.RELEASE< /version>
 	2. 定义Spring管理的类（接口）
 		1. 接口Interface类的BookService
