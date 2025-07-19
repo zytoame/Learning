@@ -211,11 +211,13 @@ MyBatis接口方法中可以接收各种各样的参数,MyBatis底层对于这�
 
 ## MyBatis Plus
 链式调用
-User user = query().eq("phone", phone).one();
+`User user = query().eq("phone", phone).one();`
 MyBatis-Plus 会将其转换为：SELECT * FROM user WHERE phone = ? LIMIT 1
 
-|方法调用|作用|
-|---|---|
-|`query()`|创建一个查询条件构造器（QueryWrapper的简化入口）|
-|`eq()`|添加等值条件（相当于SQL的`WHERE phone = ?`）|
-|`one()`|执行查询并返回单个实体（如果结果多于一条会抛异常）|
+| 方法调用                 | 作用                               |
+| -------------------- | -------------------------------- |
+| `query()`            | 创建一个查询条件构造器（QueryWrapper的简化入口）   |
+| `eq()`               | 添加等值条件（相当于SQL的`WHERE phone = ?`） |
+| `one()`              | 执行查询并返回单个实体（如果结果多于一条会抛异常）        |
+| `orderByAsc("sort")` | 添加按 `sort` 字段升序排列的条件             |
+| `list()`             | 执行查询并返回 `List<ShopType>` 结果集     |
