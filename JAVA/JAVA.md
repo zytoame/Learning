@@ -71,3 +71,25 @@ class SubClass extends SuperClass {
 	} 
 }
 ```
+
+# JVM
+JVM（Java Virtual Machine）是Java程序运行的核心组件，负责将Java字节码转换为机器码并执行。它提供了内存管理、垃圾回收（GC）、线程管理等关键功能，确保Java程序跨平台运行（"Write Once, Run Anywhere"）。
+### **Q1: OOM（OutOfMemoryError）怎么处理？**
+
+- **堆内存不足**：调整 `-Xmx`，检查内存泄漏。
+- **元空间不足**：调整 `-XX:MetaspaceSize`。
+- **线程栈溢出**：减少 `-Xss`（默认1MB）。
+    
+### **Q2: 如何排查CPU 100%？**
+
+1. `top` 找到高CPU的Java进程。
+2. `jstack <pid>` 分析线程栈，定位耗时方法。
+    
+
+### **Q3: G1 和 CMS 的区别？**
+
+|**对比项**|**G1**|**CMS**|
+|---|---|---|
+|**算法**|分Region标记-整理|并发标记-清除|
+|**延迟**|可控（`MaxGCPauseMillis`）|不可控（可能并发失败）|
+|**内存**|无碎片|有碎片（需Full GC整理）|
