@@ -2,33 +2,33 @@ spring的设计模式：单例、工厂、观察者（监听器）、模板方�
 ## Spring Framework
 1. Spring Framework 是一个开源的 **Java/JavaEE 应用开发框架**，它的核心目标是 **简化企业级应用开发**，提供一套 **全面的编程和配置模型**，帮助开发者更高效地构建可维护、可扩展的应用程序。
 2. 系统架构
-	![[Pasted image 20250711143442.png]]
+	![Pasted image 20250711143442](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711143442.png)
 ### 核心容器（目标：充分解耦）
 #### IoC（Inversion of Control）控制反转：
 1. **IoC**：由主动new产生对象转换为外部（Spring提供的IoC容器）提供对象。对象控制权由程序转移到外部
 2. **Bean**：在IoC容器中被创建或被管理的对象
 	1. 别名
-		1. ![[Pasted image 20250711162344.png]]
+		1. ![Pasted image 20250711162344](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711162344.png)
 	2. 作用范围
-		1. ![[Pasted image 20250711162533.png]]![[Pasted image 20250711162655.png]]
+		1. ![Pasted image 20250711162533](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711162533.png)![Pasted image 20250711162655](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711162655.png)
 	3. 实例化bean的三种
 		1. 构造方法
-			1. ![[Pasted image 20250711171205.png]]
+			1. ![Pasted image 20250711171205](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171205.png)
 		2. 静态工厂实例化
-			1. ![[Pasted image 20250711171136.png]]
+			1. ![Pasted image 20250711171136](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171136.png)
 		3. 实例工厂
-			1. ==实用==![[Pasted image 20250711173003.png]]
-			2. ![[Pasted image 20250711171918.png]]
+			1. ==实用==![Pasted image 20250711173003](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711173003.png)
+			2. ![Pasted image 20250711171918](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171918.png)
 	4. 生命周期
 		1. **Bean创建流程**
 			1. 解析`@Configuration`类
 			2. 创建配置类实例
 			3. 处理配置类的依赖注入（@Resource/@Autowired）
 			4. 调用`@Bean`方法或接口方法（如`addInterceptors`）
-		2. ![[Pasted image 20250711175009.png]]
-		3. ![[Pasted image 20250711175034.png]]
-		4. ![[Pasted image 20250711175059.png]]
-6. 入门案例：
+		2. ![Pasted image 20250711175009](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175009.png)
+		3. ![Pasted image 20250711175034](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175034.png)
+		4. ![Pasted image 20250711175059](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175059.png)
+3. 入门案例：
 	1. 导入坐标：pom.xml文件中< groupId>org.springframework< /groupId>  < artifactId>spring-context< /artifactId>  < version>5.2.10.RELEASE< /version>
 	2. 定义Spring管理的类（接口）
 		1. 接口Interface类的BookService
@@ -53,23 +53,23 @@ spring的设计模式：单例、工厂、观察者（监听器）、模板方�
 	1. 引用类型property
 		1. 删除使用new的形式创建对象的代码
 		2. 提供依赖对象对应的setter方法，容器在执行
-		3. 配置service和bean的依赖关系![[Pasted image 20250711161158.png]]
+		3. 配置service和bean的依赖关系![Pasted image 20250711161158](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711161158.png)
 	2. 简单类型
-		1. ![[Pasted image 20250711193711.png]]
+		1. ![Pasted image 20250711193711](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711193711.png)
 2. 构造器注入constructor-arg
 	1. 简单类型
-		1. ![[Pasted image 20250711200047.png]]
+		1. ![Pasted image 20250711200047](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711200047.png)
 3. 选择
-	1. ![[Pasted image 20250711200502.png]]
+	1. ![Pasted image 20250711200502](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711200502.png)
 4. 自动装配
-	1. ![[Pasted image 20250711201851.png]]![[Pasted image 20250711202108.png]]
+	1. ![Pasted image 20250711201851](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711201851.png)![Pasted image 20250711202108](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711202108.png)
 5. 集合注入
 	1. 数据源对象管理
-		1. ![[Pasted image 20250711205257.png]]
+		1. ![Pasted image 20250711205257](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711205257.png)
 6. 加载properties文件
-	1. 开命名空间![[Pasted image 20250711210032.png]]
-	2. ![[Pasted image 20250711211629.png]]
-	3. 注意点![[Pasted image 20250711211940.png]]
+	1. 开命名空间![Pasted image 20250711210032](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711210032.png)
+	2. ![Pasted image 20250711211629](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711211629.png)
+	3. 注意点![Pasted image 20250711211940](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711211940.png)
 #### 注解开发
 1. 纯注解开发
 ```java
@@ -80,26 +80,26 @@ public class AppForAnnotation {
 }
 ```
 2. bean生命周期
-	1. ![[Pasted image 20250712104533.png]]
+	1. ![Pasted image 20250712104533](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712104533.png)
 3. 依赖注入
-	1. 引用类型![[Pasted image 20250712105302.png]]![[Pasted image 20250712105328.png]]
+	1. 引用类型![Pasted image 20250712105302](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712105302.png)![Pasted image 20250712105328](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712105328.png)
 	2. 简单类型：使用@Value("")进行注入
 	3. 加载properties文件：使用@PropertySource({"",""})
 4. 第三方bean管理
-	1. ![[Pasted image 20250712112249.png]]
+	1. ![Pasted image 20250712112249](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712112249.png)
 	2. 依赖注入
-		1. ![[Pasted image 20250712112528.png]]
+		1. ![Pasted image 20250712112528](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712112528.png)
 5. 对比
-	1. ![[Pasted image 20250712112850.png]]
+	1. ![Pasted image 20250712112850](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712112850.png)
 #### 容器
 1. 创建容器
-	1. ![[Pasted image 20250711212336.png]]
+	1. ![Pasted image 20250711212336](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711212336.png)
 2. 获取bean
-	1. ![[Pasted image 20250711212426.png]]
+	1. ![Pasted image 20250711212426](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711212426.png)
 3. 总结
-	1. 容器相关![[Pasted image 20250711212932.png]]
-	2. bean![[Pasted image 20250711213049.png]]
-	3. 依赖注入![[Pasted image 20250711213141.png]]
+	1. 容器相关![Pasted image 20250711212932](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711212932.png)
+	2. bean![Pasted image 20250711213049](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711213049.png)
+	3. 依赖注入![Pasted image 20250711213141](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711213141.png)
 ### 整合
 1. MyBatis
 	1. MybatisConfig文件
@@ -121,9 +121,9 @@ public class AppForAnnotation {
 		    }  
 		}
 		```
-		1. ![[Pasted image 20250712134742.png]]![[Pasted image 20250712134804.png]]
+		1. ![Pasted image 20250712134742](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712134742.png)![Pasted image 20250712134804](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712134804.png)
 2. 整合junit
-	1. ![[Pasted image 20250712143448.png]]
+	1. ![Pasted image 20250712143448](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712143448.png)
 ###  AOP
 #### 原理
 - AOP（Aspect-Oriented Programming，面向切面编程）是OOP（面向对象编程）的补充技术，用于**解耦横切关注点**（Cross-Cutting Concerns）。它通过动态代理等技术，将分散在多个类中的重复代码（如日志、事务、安全等）抽取到统一的模块中，使业务逻辑更纯净。
@@ -139,7 +139,7 @@ public class AppForAnnotation {
 | 通知类                 | 定义通知的类                                                 |                                                 |
 | **切点（Pointcut）**    | 匹配连接点的表达式（定义哪些方法需要增强）spring中一个切入点可以只描述一个具体方法，也可以匹配多个方法 | `@Pointcut("execution(* com.service.*.*(..))")` |
 | **目标对象（Target）**    | 被代理的原始对象                                               | `UserService`实例                                 |
-![[Pasted image 20250712144410.png]]
+![Pasted image 20250712144410](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712144410.png)
 #### 入门案例
 1. pom.xml文件：1.导入坐标
 	```java
@@ -175,13 +175,13 @@ public class MyAdvice {
 ```
 2.  7. springConfig文件中加入@EnableAspectJAutoProxy对AOP注解驱动支持，与@Aspect对应
 #### 切入点
-1. 切入点表达式：![[Pasted image 20250712161848.png]]
+1. 切入点表达式：![Pasted image 20250712161848](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712161848.png)
 2. 通配符
-	1. 给所有业务层的查询方法加aop：@Pointcut("execution(* com.zytoame. * . * Service.find* (..))") ![[Pasted image 20250712164117.png]]
-	2. ![[Pasted image 20250712162226.png]]
+	1. 给所有业务层的查询方法加aop：@Pointcut("execution(* com.zytoame. * . * Service.find* (..))") ![Pasted image 20250712164117](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712164117.png)
+	2. ![Pasted image 20250712162226](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712162226.png)
 #### 通知
 1. 环绕通知@Arround
-	1. ![[Pasted image 20250712165359.png]]
+	1. ![Pasted image 20250712165359](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712165359.png)
 	```java
 	@Around("pt()")
 	public Object around(ProceedingJoinPoint pjp) throws Throwable{
@@ -212,15 +212,15 @@ public void runSpeed(ProceedingJoinPoint pjp) throws Throwable {
 }
 ```
 #### 通知获取参数数据
-1. 参数数据![[Pasted image 20250712171411.png]]
-2. 返回值![[Pasted image 20250712171446.png]]
+1. 参数数据![Pasted image 20250712171411](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712171411.png)
+2. 返回值![Pasted image 20250712171446](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712171446.png)
 #### 案例：密码空格处理 
-![[Pasted image 20250712172916.png]]
+![Pasted image 20250712172916](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712172916.png)
 ### 事务：开到业务层上 
 案例：银行账户转账：a账户减钱，b账户加钱
-![[Pasted image 20250712180604.png]]![[Pasted image 20250712180612.png]]
-jdbcConfig文件：![[Pasted image 20250712180658.png]]
-![[Pasted image 20250712180716.png]]
+![Pasted image 20250712180604](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712180604.png)![Pasted image 20250712180612](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712180612.png)
+jdbcConfig文件：![Pasted image 20250712180658](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712180658.png)
+![Pasted image 20250712180716](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712180716.png)
 需求增加：对每次转账操作在数据库进行留痕记录（增加日志），无论转账是否成功
 	存在问题：日志记录与转账操作隶属于同一个事务，同成功同失败。
 		transfer操作中有三个事务（进钱，减钱，日志）三个事务都加入到同一个事务。
@@ -230,7 +230,7 @@ jdbcConfig文件：![[Pasted image 20250712180658.png]]
 	- 事务管理员
 	- 事务协调员
 - 事务配置
-	- 事务相关配置![[Pasted image 20250713120412.png]]
+	- 事务相关配置![Pasted image 20250713120412](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250713120412.png)
 	- 异常回滚：error或者运行时异常会发生回滚；有些异常是默认不参与回滚的（IOException
 		- 异常出现在业务层if(true){throw new IOException();}抛出异常
 		- 在业务层接口@**Transactional**(==rollbackFor== = {IOExceprion.class})
@@ -239,7 +239,7 @@ jdbcConfig文件：![[Pasted image 20250712180658.png]]
 	- 事务必定运行
 		- try{可能不运行的事务}finally{一定要运行的事务}
 - 事务传播行为
-	- ![[Pasted image 20250713120257.png]]
+	- ![Pasted image 20250713120257](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250713120257.png)
 ## SpringMVC（表现层框架）
 ### 概述
 1. 基于Java实现MVC模型的轻量级web框架：表现层开发
@@ -363,10 +363,10 @@ jdbcConfig文件：![[Pasted image 20250712180658.png]]
 	- 响应
 		- 页面
 		- json数据 
-			- ![[Pasted image 20250714101448.png]]
+			- ![Pasted image 20250714101448](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250714101448.png)
 - REST风格：书写简化，隐藏访问行为。使用restful开发
-	- ![[Pasted image 20250714102032.png]]
-	- ![[Pasted image 20250714104636.png]]
+	- ![Pasted image 20250714102032](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250714102032.png)
+	- ![Pasted image 20250714104636](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250714104636.png)
 	- rustful简化开发
 		```java
 		@RestController
@@ -385,11 +385,11 @@ jdbcConfig文件：![[Pasted image 20250712180658.png]]
 		}
 		```
 	- 页面数据交互
-		- ![[Pasted image 20250714110503.png]]
-		- ![[Pasted image 20250714110517.png]]
-		- ![[Pasted image 20250714110531.png]]
+		- ![Pasted image 20250714110503](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250714110503.png)
+		- ![Pasted image 20250714110517](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250714110517.png)
+		- ![Pasted image 20250714110531](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250714110531.png)
 ### ==ssm整合==
-- ![[Pasted image 20250714113744.png]]
+- ![Pasted image 20250714113744](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250714113744.png)
 - 业务层测试test
 - 事务处理
 - 表现层数据封装
@@ -430,7 +430,7 @@ jdbcConfig文件：![[Pasted image 20250712180658.png]]
 		getter和setter构造函数。。。
 		```
 	- 表现层数据封装Controller类
-		- ![[Pasted image 20250714163509.png]]
+		- ![Pasted image 20250714163509](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250714163509.png)
 		```java
 		@GetMapping  
 		public Result getAll() {  
@@ -458,12 +458,12 @@ jdbcConfig文件：![[Pasted image 20250712180658.png]]
 - 拦截器：工作机制，做增强，在controller前后进行
 ## Springboot
 - 属性配置
-	- ![[Pasted image 20250715103706.png]]
+	- ![Pasted image 20250715103706](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715103706.png)
 	- yaml数据读取
 		- 自定义对象封装指定数据（实体类封装 @ConfigurationProperties(prefix = "enterprise")  controller类中：@Autowired  private Enterprise enterprise;
-	- 多环境启动配置![[Pasted image 20250715110643.png]]
+	- 多环境启动配置![Pasted image 20250715110643](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715110643.png)
 	- 测试类整合junit进行单元测试：
-		- ![[Pasted image 20250715113753.png]]
+		- ![Pasted image 20250715113753](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715113753.png)
 	- 整合Mybatis
 		- 坐标
 			```xml
@@ -489,6 +489,6 @@ jdbcConfig文件：![[Pasted image 20250712180658.png]]
 			</dependency>
 			```
 		- 数据源参数：yml：
-			- ![[Pasted image 20250715140309.png]]
-		- 定义数据层接口Dao与映射配置@Mapper![[Pasted image 20250715140404.png]]
-		- 测试![[Pasted image 20250715140348.png]] 
+			- ![Pasted image 20250715140309](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140309.png)
+		- 定义数据层接口Dao与映射配置@Mapper![Pasted image 20250715140404](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140404.png)
+		- 测试![Pasted image 20250715140348](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140348.png) 

@@ -20,7 +20,7 @@ alt + fn + insert：可以自动填充 tostring（）和 getter and setter（）
 **List< Brand> brands = brandMapper.selectAll();**
 
 
-![[Pasted image 20250703205751.png]]
+![Pasted image 20250703205751](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250703205751.png)
 核心配置文件的顶层结构
 1. properties（属性）
 2. settings（设置）
@@ -36,7 +36,7 @@ alt + fn + insert：可以自动填充 tostring（）和 getter and setter（）
 9. mappers（映射器）
 ## 配置文件完成增删改查
 1. 编写接口方法
-	![[Pasted image 20250703222012.png]]
+	![Pasted image 20250703222012](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250703222012.png)
 2. 编写sql
 3. 执行方法
 ### 查询
@@ -77,7 +77,7 @@ alt + fn + insert：可以自动填充 tostring（）和 getter and setter（）
 			3. #{}将传入的数据都当成一个字符串，会对自动传入的数据加一个双引号。如：`select * from user where id= #{user_id}`，如果传入的值是11,那么解析成sql时的值为`where id="11"` ，
 			4. 如果sql语句中只有`一个参数`,此时参数名称可以`随意定义`  
 			如果sql语句有**多**个参数,此时参数名称应该是与当前表关联[ 实体类的属性名 ]或则[ Map集合关键字 ]，**不能随便写，必须对应**！如下图
-			![[Pasted image 20250704111500.png]]
+			![Pasted image 20250704111500](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250704111500.png)
 		2. ==${}==：拼sql，会存在sql注入问题
 			1. 使用时机：表名或者列名不固定的情况下
 			2. $ {}将传入的数据直接显示生成在sql中。如：`select * from user where id= $ {user_id}`，如果传入的值是11,那么解析成sql时的值为`where id=11`
@@ -101,12 +101,12 @@ alt + fn + insert：可以自动填充 tostring（）和 getter and setter（）
 				2. 对象参数：保证SQL中的参数名和 实体类属性名 对应上
 				3. map集合参数：保证SQL中的参数名和 map集合的键的名称 对应上
 		3. 结果：List< Brand>
-		4. mapper.java![[Pasted image 20250710211150.png]]
+		4. mapper.java![Pasted image 20250710211150](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710211150.png)
 		5. 编写SQL语句：SQL映射文件
-		6.  mapper.xml![[Pasted image 20250710211237.png]]
+		6.  mapper.xml![Pasted image 20250710211237](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710211237.png)
 		7. 执行方法，测试
 		8. test.java
-			1. ![[Pasted image 20250710211401.png]]
+			1. ![Pasted image 20250710211401](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710211401.png)
 	2. 动态条件查询xml
 		1. if
 		2. choose（when，otherwise）

@@ -25,4 +25,4 @@
 
 
 Maven Web项目
-![[Pasted image 20250706154748.png]]
+![Pasted image 20250706154748](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250706154748.png)

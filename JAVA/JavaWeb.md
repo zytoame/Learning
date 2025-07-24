@@ -61,7 +61,7 @@
 	- 封装HTTP协议操作，简化开发
 	- 可以将web项目部署到服务器中，对外提供网上浏览服务
 - 插件
-	- ![[Pasted image 20250706170226.png]]
+	- ![Pasted image 20250706170226](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250706170226.png)
 	```xml
 	<plugins>
 	<plugin>
@@ -71,23 +71,23 @@
 	</plugin>
 	</plugins>
 	```
-	- 	![[Pasted image 20250706181805.png]]
+	- 	![Pasted image 20250706181805](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250706181805.png)
 - servlet：动态 web资源开源技术。接口
-	- 入门![[Pasted image 20250706172616.png]]
-	- 执行流程![[Pasted image 20250706182141.png]]
-	- 生命周期：对象从被创建到被销毁的整个过程![[Pasted image 20250706182609.png]]
+	- 入门![Pasted image 20250706172616](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250706172616.png)
+	- 执行流程![Pasted image 20250706182141](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250706182141.png)
+	- 生命周期：对象从被创建到被销毁的整个过程![Pasted image 20250706182609](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250706182609.png)
 	- 体系结构
-	- ![[Pasted image 20250706205948.png]]
+	- ![Pasted image 20250706205948](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250706205948.png)
 - request
-	- 获取请求数据![[Pasted image 20250709161455.png]]
-	- 通用![[Pasted image 20250709162254.png]]
-	- 设置响应数据功能![[Pasted image 20250709215956.png]]
+	- 获取请求数据![Pasted image 20250709161455](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250709161455.png)
+	- 通用![Pasted image 20250709162254](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250709162254.png)
+	- 设置响应数据功能![Pasted image 20250709215956](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250709215956.png)
 - 继承体系
-	- ![[Pasted image 20250709172509.png]]
+	- ![Pasted image 20250709172509](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250709172509.png)
 - 重定向
-	- ![[Pasted image 20250710084543.png]]
+	- ![Pasted image 20250710084543](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710084543.png)
 - 路径问题
-	- ![[Pasted image 20250710090817.png]]
+	- ![Pasted image 20250710090817](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710090817.png)
 - 响应字符数据
 	- //设置流的编码  
 		response.setContentType("text/html;charset=utf-8");  
@@ -98,8 +98,8 @@
 		out.write("你好");  //正常输出你好
 	- 不需要关闭流，因为随着Response对象销毁，由服务器关闭
 ### 案例：
-- 用户登录![[Pasted image 20250710094430.png]]![[Pasted image 20250710094912.png]]
-- 用户注册![[Pasted image 20250710101510.png]]
+- 用户登录![Pasted image 20250710094430](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710094430.png)![Pasted image 20250710094912](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710094912.png)
+- 用户注册![Pasted image 20250710101510](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710101510.png)
 	- 问题：重复创建factory，代码重复
 		- 创建工具类
 		- 静态代码块
@@ -145,7 +145,7 @@
 ## 会话技术
 ### 客户端cookie
 1. 基本使用
-	1. ![[Pasted image 20250710141608.png]]
+	1. ![Pasted image 20250710141608](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710141608.png)
 2. 使用细节
 	1. 设置存活时间：cookie.setMaxAge(60* 6* 24* 7);
 	2. 编码解码
@@ -188,10 +188,10 @@
 			System.out.println("username: " + username);
 	3. session对象功能
 ### 对比
-![[Pasted image 20250710151158.png]]
+![Pasted image 20250710151158](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710151158.png)
 ### 案例
-基本逻辑![[Pasted image 20250710160705.png]]
-注册![[Pasted image 20250711104118.png]]
+基本逻辑![Pasted image 20250710160705](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250710160705.png)
+注册![Pasted image 20250711104118](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711104118.png)
 1. 注册代码，registerServlet.java
 	```java
 	@Override  
@@ -220,7 +220,7 @@
 	}
 	```
 2. 验证码：
-	1. ![[Pasted image 20250711115001.png]]
+	1. ![Pasted image 20250711115001](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711115001.png)
 	2. checkCodeUtil文件[file:/D:/Java/JavaCode/brand-demo/src/main/java/com/zytoame/util/CheckCodeUtil.java](file:///D:/Java/JavaCode/brand-demo/src/main/java/com/zytoame/util/CheckCodeUtil.java)
 	3. register.jsp
 		```java
@@ -263,11 +263,11 @@
 		```
 ## 过滤器Filter
 1. 入门
-	![[Pasted image 20250711115319.png]]
+	![Pasted image 20250711115319](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711115319.png)
 2. 拦截路径：拦截之后过滤器才会被执行
 	/* ：是拦截资源的路径，不是过滤器访问的路径
-	![[Pasted image 20250711135157.png]]
+	![Pasted image 20250711135157](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711135157.png)
 3. 过滤器链：注解配置的Filter，优先级按照过滤器类名（字符串）的自然排序
-	![[Pasted image 20250711135702.png]]
+	![Pasted image 20250711135702](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711135702.png)
 4. 案例：登录验证
 	1. 判断是否登录成功：（将user存储到session中）session中是否有user对象
