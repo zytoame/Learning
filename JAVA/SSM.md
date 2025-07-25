@@ -491,4 +491,347 @@ jdbcConfig文件：![Pasted image 20250712180658](https://kmk1132-obs-1370539359
 		- 数据源参数：yml：
 			- ![Pasted image 20250715140309](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140309.png)
 		- 定义数据层接口Dao与映射配置@Mapper![Pasted image 20250715140404](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140404.png)
-		- 测试![Pasted image 20250715140348](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140348.png) 
+		- 测试![Pasted image 20250715140348](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140348.png)
+
+## @Component和@Transactional和@Configuration
+
+| 注解             | 主要用途       | 作用级别 | 是否创建bean |
+| -------------- | ---------- | ---- | -------- |
+| @Component     | 标识Spring组件 | 类    | 是        |
+| @Transactional | 定义事务行为     | 类或方法 | 否        |
+| @Configuration | 定义配置类      | 类    | 是(配置类本身) |
+###  **1. @Component**
+
+**适用场景**：
+
+- **普通Bean管理**：当你需要让Spring管理某个类的实例（自动创建、依赖注入）时
+    
+- **组件扫描**：配合`@ComponentScan`让Spring自动发现和注册Bean
+    
+- **通用组件**：不适合用更专业注解（如`@Service`、`@Repository`）的类
+    
+
+**常见用例**：
+
+```java
+@Component
+public class MyUtilityClass {
+    // 工具类，没有明确的服务或仓库特征
+}
+```
+
+**替代注解**（更语义化的`@Component`变体）：
+
+- `@Service`：业务逻辑层（Service层）
+    
+- `@Repository`：数据访问层（DAO层）
+    
+- `@Controller`/`@RestController`：Web控制器
+    
+
+---
+
+### **2. @Transactional**
+
+**适用场景**：
+
+- **数据库事务**：需要保证多个数据库操作要么全部成功，要么全部回滚
+    
+- **方法级事务控制**：某些方法需要独立的事务行为（如只读事务、特殊隔离级别）
+    
+- **声明式事务**：不想手动编写事务管理代码（如`try-catch`回滚逻辑）
+    
+
+**常见用例**：
+```java
+@Service
+public class OrderService {
+
+    @Transactional  // 整个方法在一个事务中执行
+    public void placeOrder(Order order) {
+        // 扣减库存
+        // 创建订单
+        // 支付处理
+    }
+    
+    @Transactional(readOnly = true)  // 只读事务
+    public Order getOrderById(Long id) {
+        // 查询订单
+    }
+}
+```
+
+**关键配置选项**：
+
+- `propagation`：事务传播行为（如`REQUIRED`、`REQUIRES_NEW`）
+    
+- `isolation`：隔离级别（如`READ_COMMITTED`）
+    
+- `timeout`：超时时间
+    
+- `rollbackFor`：指定哪些异常触发回滚
+    
+
+---
+
+### **3. @Configuration**
+
+**适用场景**：
+
+- **显式Bean定义**：需要手动控制Bean的创建逻辑（如第三方库的集成）
+    
+- **条件化配置**：基于条件动态创建Bean（配合`@Conditional`）
+    
+- **替代XML配置**：用Java代码完全替代XML配置
+    
+
+**常见用例**：
+```java
+@Configuration
+public class DatabaseConfig {
+
+    @Bean
+    @Profile("prod")  // 仅在生产环境生效
+    public DataSource prodDataSource() {
+        // 配置生产环境数据源
+    }
+
+    @Bean
+    @ConditionalOnClass(RedisClient.class)
+    public RedisTemplate redisTemplate() {
+        // 当类路径存在RedisClient时才创建Bean
+    }
+}
+```
+
+**典型模式**：
+
+- 定义`@Bean`方法返回需要管理的对象
+    
+- 组合其他注解实现条件化逻辑
+    
+- 导入其他配置（通过`@Import`）
+    
+
+---
+
+### **选择注解的决策流程**
+
+1. **是否需要事务管理？**
+    
+    - 是 → 用`@Transactional`
+        
+    - 否 → 进入下一步
+        
+2. **是否需要显式定义Bean的创建逻辑？**
+    
+    - 是 → 用`@Configuration` + `@Bean`
+        
+    - 否 → 进入下一步
+        
+3. **是否希望Spring自动扫描并管理这个类？**
+    
+    - 是 → 用`@Component`或其派生注解
+        
+    - 否 → 可能不需要任何注解
+        
+
+---
+
+### **组合使用示例**
+```java
+@Configuration
+@EnableTransactionManagement  // 启用事务管理
+public class AppConfig {
+
+    @Bean
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+}
+
+@Service
+public class BankService {
+
+    @Transactional
+    public void transferMoney(Account from, Account to, BigDecimal amount) {
+        // 转账业务逻辑
+    }
+}
+```
+
+**总结**：
+
+- `@Component`：让Spring自动管理对象
+    
+- `@Transactional`：添加事务边界
+    
+- `@Configuration`：精细控制Bean的创建和组装
+
+
+---
+
+# @Autowired 和 @Resource 的区别详解
+
+`@Autowired` 和 `@Resource` 都是用于依赖注入的注解，但它们来自不同的标准，在行为上有一些重要区别。
+
+## 1. 来源不同
+
+- **`@Autowired`**:
+    
+    - 是 Spring 框架特有的注解
+        
+    - 属于 `org.springframework.beans.factory.annotation` 包
+        
+- **`@Resource`**:
+    
+    - 是 Java 标准注解 (JSR-250)
+        
+    - 属于 `javax.annotation` 包
+        
+    - 不依赖于 Spring 框架，理论上可以在其他支持 JSR-250 的框架中使用
+        
+
+## 2. 注入方式不同
+
+### `@Autowired` 注入机制
+
+默认按**类型**(Type)进行自动装配:
+
+```java
+@Autowired
+private UserRepository userRepository;
+```
+
+1. Spring 会在容器中查找 `UserRepository` 类型的 bean
+    
+2. 如果找到多个同类型 bean，会抛出 `NoUniqueBeanDefinitionException`
+    
+3. 可以通过 `@Qualifier` 注解指定 bean 名称来解决冲突
+    
+```java
+@Autowired
+@Qualifier("userRepositoryImpl") 
+private UserRepository userRepository;
+```
+
+### `@Resource` 注入机制
+
+默认按**名称**(Name)进行装配，其次按类型:
+```java
+@Resource
+private UserRepository userRepository;
+```
+
+1. 首先尝试按名称匹配 - 查找名为 "userRepository" 的 bean
+    
+2. 如果找不到，则回退到按类型匹配
+    
+3. 可以通过 name 属性显式指定 bean 名称
+    
+```java
+@Resource(name = "userRepositoryImpl")
+private UserRepository userRepository;
+```
+
+## 3. 可选性不同
+
+- **`@Autowired`**:
+    
+    - 默认情况下是强制依赖(required=true)
+        
+    - 可以设置为非强制: `@Autowired(required=false)`
+        
+- **`@Resource`**:
+    
+    - 默认情况下也是强制依赖
+        
+    - 没有直接设置可选性的属性，但可以通过 name 属性和类型回退机制实现类似效果
+        
+
+## 4. 适用范围
+
+- **`@Autowired`**:
+    
+    - 可以用于**构造器**、方法、字段和参数
+        
+    - Spring 特有功能如 `@Primary`、`@Qualifier` 与其配合使用
+        
+- **`@Resource`**:
+    
+    - 只能用于字段和方法(不能用于构造器)
+        
+    - 更符合 Java 标准，但功能相对较少
+        
+
+## 5. 使用建议
+
+**使用 `@Autowired` 当:**
+
+- 项目完全基于 **Spring**生态, 与 Spring 生态集成更好
+    
+- 需要与 Spring 其他特性(如 `@Primary`、`@Qualifier`)配合使用
+    
+- 需要**构造器**注入时
+    
+
+**使用 `@Resource` 当:**
+
+- 希望代码减少对 Spring 的依赖，保持更好的**可移植性**。需要**减少框架耦合**。
+    
+- 需要按名称明确指定依赖时
+    
+- 在**非 Spring 环境**中使用(如 Java EE 容器)
+    
+
+## 6. 示例对比
+
+### `@Autowired` 示例
+
+```java
+@Service
+public class UserService {
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    @Qualifier("auditLogger")
+    private Logger logger;
+    
+    @Autowired(required = false)
+    private Optional<CacheManager> cacheManager;
+}
+```
+
+### `@Resource` 示例
+
+```java
+@Service
+public class UserService {
+    
+    @Resource
+    private UserRepository userRepository;
+    
+    @Resource(name = "auditLogger")
+    private Logger logger;
+    
+    // 没有直接的 required=false 替代方案
+    // 可以通过 Optional 或检查 null 实现
+}
+```
+
+## 7. 总结对比表
+
+|特性|`@Autowired`|`@Resource`|
+|---|---|---|
+|**来源**|Spring 特有|Java 标准(JSR-250)|
+|**默认注入方式**|按类型|按名称，其次按类型|
+|**构造器注入**|支持|不支持|
+|**可选依赖**|支持(required=false)|不支持直接设置|
+|**指定名称**|需配合`@Qualifier`|使用name属性|
+|**与其他Spring特性集成**|更好(如`@Primary`)|有限|
+|**可移植性**|仅Spring|任何JSR-250兼容环境|
+
+--- 
+
