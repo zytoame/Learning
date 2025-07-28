@@ -1,3 +1,21 @@
+- java
+	- 在本地测试代码
+		```java
+		class Solution {
+			public int sum(int num1, int num2) {
+				return num1 + num2;
+			}
+		
+			public static void main(String[] args) {
+				// 力扣评测机对每个测试数据，都会重新创建一个 Solution 对象
+				System.out.println(new Solution().sum(12, 5));  // 示例 1
+				System.out.println(new Solution().sum(-10, 4)); // 示例 2
+			}
+		}
+		```
+	- 求最小值：Math.min
+	- 初始化为最小值：int a = Integer.MIN_VALUE;
+	- 
 - 读取数据
 	- 字符串(字母数字)：string a; cin >> a;   
 	- 有空格读取整行，可以逐行读取：getline(cin, a);
@@ -7,7 +25,9 @@
 	化简后得到 (a != 0 || b != 0)，又表达式expr != 0和expr是等价的，所以这个条件又可以表示成(a||b)，也就有了这种写法。
 - `while(t--)`等价于`while(t-- != 0)`
 - ### 二分查找
-	- 
+	- 闭区间
+	- 左闭右开
+	- 错误
 - ### 哈希表
 	- 什么是哈希表：想象成一本字典
 		-  **键 (Key)**： 相当于字典里的“字”或者“词”。
@@ -21,6 +41,12 @@
 		- 查找值：`ValueType value = myMap[Key];`
 		- 删除键值对：`myMap.erase(key);`
 		- 遍历哈希表：
+	- JAVA
+		- 初始化：Map< Integer, Integer> hashTable = new HashMap<>(n);  n为容量（即cnt的可能最大值）。
+		- cnt.getOrDefault( j - k, 0 ); 查找 j - k 是否在 cnt 中存在，如果存在则返回其出现次数，否则返回 `0`。
+		- cnt.merge ( j, 1, Integer : :sum);  更新 j 在 cnt 中出现的次数，如果不存在初始化为1，存在加1。
+		- **查找值**：通过key查找value = ht.get(key);
+		- ht.containsKey( target - nums[i])
 	- 将vector< int>& nums转换为哈希集合：unordered_set< int> hashSet( nums.begin(), nums.end());
 - ### 动态规划
 	- ####  **记忆化DFS**
