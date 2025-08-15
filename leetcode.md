@@ -15,7 +15,20 @@
 		```
 	- 求最小值：Math.min
 	- 初始化为最小值：int a = Integer.MIN_VALUE;
-	- 
+	- **截取字符串**： `substring(int start, int end)` 方法接受两个参数：`start` 和 `end`。
+	    截取字符串  中从 start 到 end（不包括 end 索引位置）的部分
+	    - `start` 是子字符串的起始位置（包含该位置的字符）。
+	    - `end` 是子字符串的结束位置（不包含该位置的字符）。
+	- 对**数组**进行**排序**：Arrays.sort()
+	- `(p, q) -> p[0] - q[0]`：这是一个 **lambda 表达式**，实现了 `Comparator` 接口的`compare(p, q)` 方法。
+		- `p[0] - q[0]`是 `Comparator` 的比较规则。如果 `p[0]` 小于 `q[0]`，则 `p` 会排在 `q` 前面（因为结果是负数）。
+		- `compare(p, q)` 方法返回一个整数：如果返回负数，`p` 排在 `q` 前面。
+	- 高效复制数组元素：arraycopy(Object src源数组, int srcPos源数组要复制的起始位置, Object dest目标数组, int destPos目标数组接收复制的起始位置, int length复制的数据长度)
+- c++
+	- 将i接入ans：            ans.push_back(i);         
+	- 删除最后一个字符：ans.pop_back(); 
+	- 表示最后一个字符串：ans.back();
+	- **给nums从小到大排序**：ranges::sort(nums);
 - 读取数据
 	- 字符串(字母数字)：string a; cin >> a;   
 	- 有空格读取整行，可以逐行读取：getline(cin, a);
@@ -42,10 +55,11 @@
 		- 删除键值对：`myMap.erase(key);`
 		- 遍历哈希表：
 	- JAVA
-		- 初始化：Map< Integer, Integer> hashTable = new HashMap<>(n);  n为容量（即cnt的可能最大值）。
+		- **初始化**：Map< Integer, Integer> hashTable = new HashMap<>(n);  n为容量（即cnt的可能最大值）。
+		- **hashTable.put(key.value)**
+		- **查找值**：通过key查找value：value = hashTable.get(key)
 		- cnt.getOrDefault( j - k, 0 ); 查找 j - k 是否在 cnt 中存在，如果存在则返回其出现次数，否则返回 `0`。
 		- cnt.merge ( j, 1, Integer : :sum);  更新 j 在 cnt 中出现的次数，如果不存在初始化为1，存在加1。
-		- **查找值**：通过key查找value = ht.get(key);
 		- ht.containsKey( target - nums[i])
 	- 将vector< int>& nums转换为哈希集合：unordered_set< int> hashSet( nums.begin(), nums.end());
 - ### 动态规划
@@ -81,17 +95,214 @@
 		- vowel 除去out部分；
 		以上三步适用于所有定长滑窗题目。
 		- ![[Pasted image 20250516155013.png]]
-- 将i接入ans：            ans.push_back(i); //。        
-- 删除最后一个字符：ans.pop_back(); //
-- 表示最后一个字符串：ans.back();
-- **给nums从小到大排序**：ranges::sort(nums);
-- **范围 for 循环**（C++11 特性），遍历 `words` 列表中的每个单词 `w`：
-	- `for (auto& w : words)`   {    cnt [ w [ 0 ]  - ' a ' ]  [ w [ 1 ]  -  ' a ' ] + +;  }
-	- `auto& w` 表示 `w` 是 `words` 中元素的引用（避免拷贝，提高效率）
-	- `w[0] - 'a'`将字母转换为 `0-25` 的索引（例如 `'a' - 'a' = 0`，`'b' - 'a' = 1`，依此类推）
-	- `cnt[first][second]++` 对对应的字母组合的计数加 1
-- ### 广度优先搜索BFS，用双列表
-	- 蛇梯棋
+
+### 栈stack
+
+#### **`Stack<TreeNode> stack = new Stack<>();` 详解**
+
+在Java中，`Stack` 是一种 **后进先出（LIFO, Last In First Out）** 的线性数据结构，专门用于存储和操作数据。在您的代码中：
+
+```java
+Stack<TreeNode> stack = new Stack<>();
+```
+
+- **`Stack<TreeNode>`** 表示这是一个 **存储 `TreeNode` 对象** 的栈。
+- **`new Stack<>()`** 创建了一个 **空栈**（使用 **泛型** 确保类型安全）。
+
+---
+
+##### **1. `Stack` 的基本特性**
+| **特性**       | **说明** |
+|--------------|---------|
+| **数据结构**   | 后进先出（LIFO） |
+| **继承关系**   | `Stack` 继承自 `Vector`（线程安全，但性能较低） |
+| **主要方法**   | `push()`、`pop()`、`peek()`、`empty()`、`search()` |
+| **线程安全**   | ✅ 是（所有方法用 `synchronized` 修饰） |
+| **推荐替代**   | `Deque`（如 `ArrayDeque`，性能更高） |
+
+---
+
+##### **2. `Stack` 的常用方法**
+###### **（1）`push(E item)` - 入栈**
+```java
+stack.push(node1);  // 将元素压入栈顶
+stack.push(node2);
+```
+- **栈状态**：`[node2, node1]`（`node2` 在栈顶）
+
+###### **（2）`pop()` - 出栈**
+```java
+TreeNode topNode = stack.pop();  // 移除并返回栈顶元素
+```
+- **栈状态**：`[node1]`（`node2` 被移除）
+- **如果栈为空**：抛出 `EmptyStackException`
+
+###### **（3）`peek()` - 查看栈顶元素（不移除）**
+```java
+TreeNode topNode = stack.peek();  // 返回栈顶元素但不移除
+```
+- **栈状态**：`[node2, node1]`（仍保留 `node2`）
+
+###### **（4）`empty()` - 判断栈是否为空**
+```java
+boolean isEmpty = stack.empty();  // true 或 false
+```
+
+###### **（5）`search(Object o)` - 查找元素位置**
+```java
+int position = stack.search(node1);  // 返回元素位置（从栈顶开始计数，1-based）
+```
+- **如果不存在**：返回 `-1`
+
+---
+
+##### **3. `Stack` 的底层实现**
+- **基于 `Vector`**（动态数组）实现：
+  ```java
+  public class Stack<E> extends Vector<E> { ... }
+  ```
+- **核心操作**：
+  - `push()`：调用 `addElement(item)`（在数组末尾添加）
+  - `pop()`：调用 `removeElementAt(size() - 1)`（移除最后一个元素）
+- **线程安全**：所有方法用 `synchronized` 修饰（性能较低）。
+
+---
+
+##### **4. 为什么推荐使用 `Deque` 替代 `Stack`？**
+| **对比项**       | **`Stack`** | **`Deque`（如 `ArrayDeque`）** |
+|----------------|------------|-----------------------------|
+| **继承体系**     | 继承 `Vector`（历史遗留） | 独立接口，实现类更灵活 |
+| **线程安全**     | ✅ 是（同步开销大） | ❌ 否（但性能更高） |
+| **功能扩展**     | 仅支持LIFO | 支持LIFO和FIFO（双端操作） |
+| **性能**        | 较低（同步锁） | 更高（无锁竞争） |
+| **推荐场景**     | 旧代码兼容 | 新代码首选 |
+
+###### **使用 `ArrayDeque` 实现栈**
+```java
+Deque<TreeNode> stack = new ArrayDeque<>();  // 推荐替代方案
+stack.push(node1);  // 入栈
+TreeNode topNode = stack.pop();  // 出栈
+```
+
+---
+
+##### **5. 典型应用场景**
+###### **（1）深度优先搜索（DFS）**
+```java
+Stack<TreeNode> stack = new Stack<>();
+stack.push(root);
+while (!stack.empty()) {
+    TreeNode node = stack.pop();
+    if (node.right != null) stack.push(node.right);
+    if (node.left != null) stack.push(node.left);
+}
+```
+
+###### **（2）括号匹配检查**
+```java
+Stack<Character> stack = new Stack<>();
+for (char c : s.toCharArray()) {
+    if (c == '(') stack.push(')');
+    else if (stack.isEmpty() || stack.pop() != c) return false;
+}
+return stack.isEmpty();
+```
+
+---
+
+##### **6. 总结**
+- **`Stack<TreeNode> stack = new Stack<>();`** 创建了一个 **存储 `TreeNode` 的栈**。
+- **核心操作**：`push()`、`pop()`、`peek()`。
+- **底层实现**：基于 `Vector`（动态数组），线程安全但性能较低。
+- **现代替代方案**：优先使用 `Deque`（如 `ArrayDeque`），性能更高。
+
+如果不需要线程安全，建议使用 `ArrayDeque` 代替 `Stack`！ 🚀
+
+### 滑动窗口
+```java
+//长度最小的子数组
+int n = nums.length, ans = n+1;
+int left = 0;
+for(int right = 0; right < n; right++){
+	// 右边入
+	sum += nums[right];
+	while(sum >= target){
+	//更新答案
+		ans = Math.max(ans, right-left+1);
+	//左边出
+		sum -= nums[left];
+		left++;
+	}
+	if(ans > n){
+		ans = 0;
+	}
+	return ans;
+}
+```
+### 单调队列
+- 创建基于动态数组实现的队列：Deque< Integer> q = new ArrayDeque<>();
+
+1. **`removeLast()`的作用**：它会从队列末尾开始，移除所有小于当前新元素的元素
+### 双端队列（Deque）
+```java
+Deque<Integer> deque = new LinkedList<>();
+```
+- deque.addLast(10); // 将10添加到队列的末尾
+- **`peekFirst`**: 该方法返回队列**头部**（或称“前端”）的元素，但**不删除**该元素。它用于查看队列的第一个元素，而不改变队列的状态。
+- **`removeLast`**: 该方法删除队列**尾部**（或称“后端”）的元素，并返回该被删除的元素。即从队列的末尾移除一个元素。
+
+### LinkedList和ArrayDeque
+
+`Deque<Integer> deque = new LinkedList<>();` 和 `Deque<Integer> q = new ArrayDeque<>();` 都是 Java 中实现 `Deque` 接口的不同类，它们有一些关键的区别，主要体现在性能、实现方式和适用场景上。下面是这两者的区别：
+
+#### 1. **实现类的区别**
+
+- **`LinkedList`**：是基于双向链表实现的，支持从队列的两端进行插入和删除操作。每个元素都包含指向前后元素的指针。
+- **`ArrayDeque`**：是基于动态数组实现的队列，底层使用数组来存储元素，通过数组的循环操作实现队列的双端插入和删除。
+
+#### 2. **性能**
+
+- **`LinkedList`**：
+    - **插入和删除操作**：在队列的两端插入和删除元素的时间复杂度是 O(1)。
+    - **访问元素**：访问队列中的元素需要遍历链表，时间复杂度为 O(n)。
+- **`ArrayDeque`**：
+    - **插入和删除操作**：在队列的两端插入和删除元素的时间复杂度是 O(1)，因为底层数组可以动态扩展。
+    - **访问元素**：由于底层是数组，随机访问元素的时间复杂度是 O(1)，但这在 `Deque` 中的使用场景中较少。
+
+#### 3. **内存消耗**
+
+- **`LinkedList`**：由于使用双向链表实现，每个元素都需要存储前后指针，因此比 `ArrayDeque` 占用更多的内存。
+- **`ArrayDeque`**：是基于数组的实现，因此内存使用更加紧凑，尤其在元素数量较少时，它比 `LinkedList` 更加高效。
+
+#### 4. **扩展性**
+
+- **`LinkedList`**：没有容量限制，只要有足够的内存，链表可以扩展，因此没有类似 `ArrayDeque` 的扩容问题。
+- **`ArrayDeque`**：底层使用数组，因此会根据需要自动扩容，通常是按原数组大小的两倍进行扩展。当数组容量达到上限时，会重新分配一个更大的数组。
+
+#### 5. **线程安全性**
+
+- **`LinkedList`** 和 **`ArrayDeque`** 都 **不是线程安全的**。如果需要在多线程环境中使用这些集合类，可以通过外部同步机制（例如 `Collections.synchronizedDeque()`）来保证线程安全，或者使用 `ConcurrentLinkedDeque` 等线程安全的队列实现。
+
+#### 6. **适用场景**
+
+- **`LinkedList`**：适合需要频繁在队列两端进行插入和删除操作的场景。它适合元素数量较大且插入和删除较频繁的情况。
+- **`ArrayDeque`**：适合队列中元素数量较小且访问速度较为重要的场景。由于 `ArrayDeque` 是基于数组实现的，它在处理小规模队列时比 `LinkedList` 更高效。
+
+#### 总结：
+
+- **内存和性能**：`ArrayDeque` 更节省内存并且具有较高的性能，尤其是对于小型队列和随机访问场景，`ArrayDeque` 更优。
+- **灵活性**：`LinkedList` 更适合在数据量较大，且需要频繁的插入和删除操作时使用。
+
+
+
+### **范围 for 循环**（C++11 特性），遍历 `words` 列表中的每个单词 `w`：
+- `for (auto& w : words)`   {    cnt [ w [ 0 ]  - ' a ' ]  [ w [ 1 ]  -  ' a ' ] + +;  }
+- `auto& w` 表示 `w` 是 `words` 中元素的引用（避免拷贝，提高效率）
+- `w[0] - 'a'`将字母转换为 `0-25` 的索引（例如 `'a' - 'a' = 0`，`'b' - 'a' = 1`，依此类推）
+- `cnt[first][second]++` 对对应的字母组合的计数加 1
+
+###  广度优先搜索BFS，用双列表
+- 蛇梯棋
 	```c
 	class Solution {
 	public:
@@ -128,3 +339,609 @@
 	    }
 	};
 	```
+
+
+
+### 链表
+
+用原来的链表操作：
+```java
+/**
+ * 时间复杂度 O(n)
+ * 空间复杂度 O(1)
+ * @param head
+ * @param val
+ * @return
+ */
+public ListNode removeElements(ListNode head, int val) {
+    while(head!=null && head.val==val) {
+        head = head.next;
+    }
+    ListNode curr = head;
+    while(curr!=null && curr.next !=null) {
+        if(curr.next.val == val){
+            curr.next = curr.next.next;
+        } else {
+            curr = curr.next;
+        }
+    }
+    return head;
+}
+```
+
+**迭代/虚拟头结点**
+
+```java
+/**
+ * 时间复杂度 O(n)
+ * 空间复杂度 O(1)
+ * @param head
+ * @param val
+ * @return
+ */
+public ListNode removeElements(ListNode head, int val) {
+    // 设置一个虚拟的头结点
+    ListNode dummy = new ListNode();
+    dummy.next = head;
+
+    ListNode cur = dummy;
+    while (cur.next != null) {
+        if (cur.next.val == val) {
+            cur.next = cur.next.next;
+        } else {
+            cur = cur.next;        
+        }
+    }
+    return dummy.next;
+}
+```
+
+- **递归：**
+
+	```java
+	public ListNode removeElements(ListNode head, int val) {
+	    if (head == null) {
+	        return head;
+	    }
+	
+	    head.next = removeElements(head.next, val);
+	    if (head.val == val) {
+	        return head.next;
+	    }
+	    return head;
+	}
+	```
+
+	假设链表为 `1 -> 2 -> 6 -> 3 -> 4 -> 5 -> 6`，要删除所有值为 `6` 的节点：
+	
+	1. 递归调用栈：
+	    - removeElements(1, 6)
+	        
+	        - removeElements(2, 6)
+	            
+	            - removeElements(6, 6)
+	                
+	                - removeElements(3, 6)
+	                    
+	                    - removeElements(4, 6)
+	                        
+	                        - removeElements(5, 6)
+	                            
+	                            - removeElements(6, 6)
+	                                
+	                                - removeElements(null, 6) → 返回 null
+	                                    
+	2. 递归返回过程：
+	    
+	    - 最内层返回 null
+	        
+	    - 6.next=null，判断6 == 6，返回6.next(null)
+	        
+	    - 5.next=null，判断5!=6，返回5
+	        
+	    - 4.next=5，判断4!=6，返回4
+	        
+	    - 3.next=4，判断3!=6，返回3
+	        
+	    - 6.next=3，判断6== 6，返回3
+	        
+	    - 2.next=3，判断2!=6，返回2
+	        
+	    - 1.next=2，判断1!=6，返回1
+	        
+	最终结果：`1 -> 2 -> 3 -> 4 -> 5`
+	- 时间复杂度：O(n)，需要遍历整个链表
+	- 空间复杂度：O(n)，递归调用栈的深度
+	
+	1. 递归的核心思想是"先处理后面的链表，再处理当前节点"
+	2. 通过 `head.next = removeElements(head.next, val)` 先处理剩余部分
+
+单链表
+
+```java
+//单链表
+class MyLinkedList {
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int val) {
+            this.val=val;
+        }
+    }
+    //size存储链表元素的个数
+    private int size;
+    //注意这里记录的是虚拟头结点
+    private ListNode head;
+
+    //初始化链表
+    public MyLinkedList() {
+        this.size = 0;
+        this.head = new ListNode(0);
+    }
+
+    //获取第index个节点的数值，注意index是从0开始的，第0个节点就是虚拟头结点
+    public int get(int index) {
+        //如果index非法，返回-1
+        if (index < 0 || index >= size) {
+            return -1;
+        }
+        ListNode cur = head;
+        //第0个节点是虚拟头节点，所以查找第 index+1 个节点
+        for (int i = 0; i <= index; i++) {
+            cur = cur.next;
+        }
+        return cur.val;
+    }
+	public void addAtHead(int val) {
+        ListNode newNode = new ListNode(val);
+        newNode.next = head.next;
+        head.next = newNode;
+        size++;
+        // 在链表最前面插入一个节点，等价于在第0个元素前添加
+        // addAtIndex(0, val);
+    }
+	// 在第 index 个节点之前插入一个新节点，例如index为0，那么新插入的节点为链表的新头节点。
+    // 如果 index 等于链表的长度，则说明是新插入的节点为链表的尾结点
+    // 如果 index 大于链表的长度，则返回空
+    public void addAtIndex(int index, int val) {
+        if (index < 0 || index > size) {
+            return;
+        }
+        //找到要插入节点的前驱
+        ListNode pre = head;
+        for (int i = 0; i < index; i++) {
+            pre = pre.next;
+        }
+        ListNode newNode = new ListNode(val);
+        newNode.next = pre.next;
+        pre.next = newNode;
+        size++;
+    }
+```
+
+双链表
+
+```java
+//双链表
+class MyLinkedList {  
+    class ListNode{
+        int val;
+        ListNode next, prev;
+        ListNode(int val){
+            this.val = val;
+        }
+    }
+
+    //记录链表中元素的数量
+    private int size;
+    //记录链表的虚拟头结点和尾结点
+    private ListNode head, tail;
+    
+    public MyLinkedList() {
+        //初始化操作
+        this.size = 0;
+        this.head = new ListNode(0);
+        this.tail = new ListNode(0);
+        //这一步非常关键，否则在加入头结点的操作中会出现null.next的错误！！！
+        this.head.next = tail;
+        this.tail.prev = head;
+    }
+	public void addAtTail(int val) {
+		//等价于在最后一个元素(null)前添加
+		addAtIndex(size, val);
+	}
+```
+
+
+### 二叉树
+
+- 定义
+- 二叉树遍历方式
+	- 深度优先遍历
+	    - 前序遍历（递归法，迭代法）
+	    - 中序遍历（递归法，迭代法）
+	    - 后序遍历（递归法，迭代法）
+	    - ![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250803161525322.png)
+	- 
+	- 使用栈来模拟深度遍历，使用队列来模拟广度遍历。
+	- 
+	- 广度优先遍历
+	    - 层次遍历（迭代法）
+	- 
+	```java
+	public class TreeNode {
+	    int val;
+	    TreeNode left;
+	    TreeNode right;
+	
+	    TreeNode() {}
+	    TreeNode(int val) { this.val = val; }
+	    TreeNode(int val, TreeNode left, TreeNode right) {
+	        this.val = val;
+	        this.left = left;
+	        this.right = right;
+	    }
+	}
+	```
+
+- 前序遍历
+	```java
+	class Solution {
+	    public List<Integer> preorderTraversal(TreeNode root) {
+	        List<Integer> result = new ArrayList<Integer>();
+	        preorder(root, result);
+	        return result;
+	    }
+	
+	    public void preorder(TreeNode root, List<Integer> result) {
+	        if (root == null) {
+	            return;
+	        }
+	        result.add(root.val);            //中
+	        preorder(root.left, result);     //左
+	        preorder(root.right, result);    //右
+	    }
+	}
+	```
+
+- 中序遍历
+	```java
+	public void inorder(TreeNode root, List<Integer> result) {
+	        if (root == null) {
+	            return;
+	        }
+	        inorder(root.left, result);     //左
+	        result.add(root.val);           //中
+	        inorder(root.right, result);    //右
+	    }
+	```
+
+- 后序遍历
+	```java
+	public void postorder(TreeNode root, List<Integer> result) {
+	        if (root == null) {
+	            return;
+	        }
+	        postorder(root.left, result);     //左
+	        postorder(root.right, result);    //右
+	        result.add(root.val);             //中
+	    }
+	```
+
+- 迭代遍历
+	```java
+	// 前序遍历顺序：中-左-右，入栈顺序：中-右-左
+	class Solution {
+	    public List<Integer> preorderTraversal(TreeNode root) {
+	        List<Integer> result = new ArrayList<>();
+	        if (root == null){
+	            return result;
+	        }
+	        Stack<TreeNode> stack = new Stack<>();
+	        stack.push(root);
+	        while (!stack.isEmpty()){
+	            TreeNode node = stack.pop();
+	            result.add(node.val);
+	            if (node.right != null){
+	                stack.push(node.right);
+	            }
+	            if (node.left != null){
+	                stack.push(node.left);
+	            }
+	        }
+	        return result;
+	    }
+	}
+	
+	// 中序遍历顺序: 左-中-右 入栈顺序： 左-右
+	class Solution {
+	    public List<Integer> inorderTraversal(TreeNode root) {
+	        List<Integer> result = new ArrayList<>();
+	        if (root == null){
+	            return result;
+	        }
+	        Stack<TreeNode> stack = new Stack<>();
+	        TreeNode cur = root;
+	        while (cur != null || !stack.isEmpty()){
+	           if (cur != null){
+	               stack.push(cur);
+	               cur = cur.left;
+	           }else{
+	               cur = stack.pop();
+	               result.add(cur.val);
+	               cur = cur.right;
+	           }
+	        }
+	        return result;
+	    }
+	}
+	
+	// 后序遍历顺序 左-右-中 入栈顺序：中-左-右 出栈顺序：中-右-左， 最后翻转结果
+	class Solution {
+	    public List<Integer> postorderTraversal(TreeNode root) {
+	        List<Integer> result = new ArrayList<>();
+	        if (root == null){
+	            return result;
+	        }
+	        Stack<TreeNode> stack = new Stack<>();
+	        stack.push(root);
+	        while (!stack.isEmpty()){
+	            TreeNode node = stack.pop();
+	            result.add(node.val);
+	            if (node.left != null){
+	                stack.push(node.left);
+	            }
+	            if (node.right != null){
+	                stack.push(node.right);
+	            }
+	        }
+	        Collections.reverse(result);
+	        return result;
+	    }
+	}
+	```
+
+- 统一迭代法
+	```java
+	//中序遍历（左-中-右）：添加右节点-中-null-左
+	//后序遍历（左-右-中）：添加左节点-右-中-null
+	class Solution {
+	    public List<Integer> preorderTraversal(TreeNode root) {
+	    //前序遍历
+	        List<Integer> result = new LinkedList<>();
+	        Stack<TreeNode> st = new Stack<>();
+	        if (root != null) st.push(root);
+	        while (!st.empty()) {
+	            TreeNode node = st.peek();
+	            if (node != null) {
+	                st.pop(); // 将该节点弹出，避免重复操作，下面再将右左中节点添加到栈中（前序遍历-中左右，入栈顺序右左中）
+	                if (node.right!=null) st.push(node.right);  // 添加右节点（空节点不入栈）
+	                if (node.left!=null) st.push(node.left);    // 添加左节点（空节点不入栈）
+	                st.push(node);                              // 添加中节点
+	                st.push(null); // 中节点访问过，但是还没有处理，加入空节点做为标记。
+	                
+	            } else { // 只有遇到空节点的时候，才将下一个节点放进结果集
+	                st.pop();           // 将空节点弹出
+	                node = st.peek();    // 重新取出栈中元素
+	                st.pop();
+	                result.add(node.val); // 加入到结果集
+	            }
+	        }
+	        return result;
+	    }
+	}
+	```
+
+- 层级遍历（BFS迭代-队列）
+	- 1. **`len = que.size()` 的作用**
+	    - 确保内层循环只处理当前层的节点，避免混淆层级。
+	        
+	    - 例如，第1层 `len=1`（只有根节点 `1`），第2层 `len=2`（节点 `2` 和 `3`）。
+	        
+	2. **队列的作用**
+	    
+	    - 按层级顺序存储待访问的节点（BFS核心思想）。
+	        
+	3. **时间复杂度**
+	    - **O(n)**，其中 `n` 是节点数量，每个节点进出队列一次。
+	        
+	4. **空间复杂度**
+	    - **O(n)**，最坏情况下队列存储所有叶子节点（满二叉树约`n/2`）。
+	    
+	```java
+	public void checkFun02(TreeNode node) {
+	    if (node == null) return;  // 空树直接返回
+	    
+	    Queue<TreeNode> que = new LinkedList<>();  // 初始化队列
+	    que.offer(node);  // 根节点入队
+	    
+	    while (!que.isEmpty()) {  // 只要队列不为空，就继续处理
+	        List<Integer> itemList = new ArrayList<>();  // 存储当前层的节点值
+	        int len = que.size();  // 当前层的节点数量
+	        
+	        while (len > 0) {  // 遍历当前层的所有节点
+	            TreeNode tmpNode = que.poll();  // 出队一个节点
+	            itemList.add(tmpNode.val);  // 记录节点值
+	            
+	            // 将该节点的左右子节点（下一层）入队
+	            if (tmpNode.left != null) que.offer(tmpNode.left);
+	            if (tmpNode.right != null) que.offer(tmpNode.right);
+	            len--;  // 当前层节点数减1
+	        }
+	        
+	        resList.add(itemList);  // 将当前层的节点值列表加入结果
+	    }
+	}
+	```
+
+- 层级遍历（BFS递归）
+	```java
+	class Solution {
+	    public List<List<Integer>> resList = new ArrayList<List<Integer>>();
+	
+	    public List<List<Integer>> levelOrder(TreeNode root) {
+	        dfs(root,0);
+	        return resList;
+	    }
+	    public void dfs(TreeNode node, Integer deep){
+	        if(node == null) return;
+	
+	        //进入新层级
+	        deep++;
+	
+	        //如果resList大小不够，新建层级列表
+	        while(resList.size() < deep){
+	            resList.add(new ArrayList<>());
+	        }
+	        //将当前节点加入当前层级
+	        resList.get(deep-1).add(node.val); //deep从1开始，deep-1转换为列表索引从0开始
+	        dfs(node.left, deep);
+	        dfs(node.right,deep);
+	    }
+	}
+	```
+
+- 变种问题
+	### **自底向上的层序遍历**
+	只需在最后反转 `resList`：
+	```java
+	Collections.reverse(resList);
+	```
+
+	**只返回某一层的节点**
+	例如返回第 `k` 层：
+	```java
+	if (k == resList.size()) {
+	    return resList.get(k - 1);
+	}
+	```
+### 递归
+
+- 三要素
+	- 确定参数和返回值类型
+	- 确定终止条件
+	- 确定单层递归逻辑
+
+
+### 回溯
+
+| 问题类型  | 时间复杂度            | 空间复杂度            |
+| ----- | ---------------- | ---------------- |
+| 组合问题  | `O(k × C(n, k))` | `O(n × C(n, k))` |
+| 排列问题  | `O(n × n!)`      | `O(n × n!)`      |
+| 子集问题  | `O(n × 2^n)`     | `O(n × 2^n)`     |
+| 分割回文串 | `O(n × 2^n)`     | `O(n × 2^n)`     |
+
+### 思路
+
+1. 前缀后缀
+2. 位置对调
+3. 哈希
+4. 要求时间空间复杂度分别为 O(nlogn) 和 O(1)，根据时间复杂度我们自然想到二分法，从而联想到归并排序；
+5. 使用栈来模拟深度遍历，使用队列来模拟广度遍历。
+6. 求二叉树深度 和 二叉树高度的差异，求深度适合用前序遍历，而求高度适合用后序遍历。
+7. 只有寻找某一条边（或者一个节点）的时候，递归函数会有bool类型的返回值。
+8. 如果需要搜索整棵二叉树且不用处理递归返回值，递归函数就**不要返回值**。（这种情况就是本文下半部分介绍的113.路径总和ii）
+9. 如果需要搜索整棵二叉树且需要处理递归返回值，递归函数就**需要返回值**。 （这种情况我们在[236. 二叉树的最近公共祖先 (opens new window)](https://programmercarl.com/0236.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html)中介绍）
+10. 如果要搜索其中一条符合条件的路径，那么递归一定需要返回值，因为遇到符合条件的路径了就要及时返回。
+11. 回溯法，一般可以解决如下几种问题：
+	
+	- 组合问题：N个数里面按一定规则找出k个数的集合
+	- 切割问题：一个字符串按一定规则有几种切割方式
+	- 子集问题：一个N个数的集合里有多少符合条件的子集
+	- 排列问题：N个数按一定规则全排列，有几种排列方式
+	- 棋盘问题：N皇后，解数独等等
+12. 如果是一个集合来求组合的话，就需要startIndex，
+	如果是多个集合取组合，各个集合之间相互不影响，那么就不用startIndex，
+
+
+
+### **1. 数组 & 哈希表**
+
+|题目|难度|关键点|频率|
+|---|---|---|---|
+|[1. 两数之和](https://leetcode.cn/problems/two-sum/)|Easy|哈希表|⭐⭐⭐⭐⭐|
+|[49. 字母异位词分组](https://leetcode.cn/problems/group-anagrams/)|Medium|哈希 + 字符串排序|⭐⭐⭐⭐|
+|[128. 最长连续序列](https://leetcode.cn/problems/longest-consecutive-sequence/)|Medium|哈希 + 并查集思想|⭐⭐⭐⭐|
+|[560. 和为 K 的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/)|Medium|前缀和 + 哈希|⭐⭐⭐⭐|
+
+---
+
+### **2. 链表**
+
+|题目|难度|关键点|频率|
+|---|---|---|---|
+|[206. 反转链表](https://leetcode.cn/problems/reverse-linked-list/)|Easy|迭代/递归|⭐⭐⭐⭐⭐|
+|[141. 环形链表](https://leetcode.cn/problems/linked-list-cycle/)|Easy|快慢指针|⭐⭐⭐⭐|
+|[21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists/)|Easy|双指针|⭐⭐⭐⭐|
+|[146. LRU 缓存](https://leetcode.cn/problems/lru-cache/)|Medium|哈希 + 双向链表|⭐⭐⭐⭐⭐|
+
+---
+
+### **3. 二叉树**
+
+|题目|难度|关键点|频率|
+|---|---|---|---|
+|[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)|Easy|递归/迭代|⭐⭐⭐⭐|
+|[102. 二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/)|Medium|BFS|⭐⭐⭐⭐⭐|
+|[104. 二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)|Easy|递归/DFS|⭐⭐⭐⭐|
+|[543. 二叉树的直径](https://leetcode.cn/problems/diameter-of-binary-tree/)|Easy|后序遍历|⭐⭐⭐⭐|
+
+---
+
+### **4. 动态规划（DP）**
+
+|题目|难度|关键点|频率|
+|---|---|---|---|
+|[70. 爬楼梯](https://leetcode.cn/problems/climbing-stairs/)|Easy|基础DP|⭐⭐⭐⭐|
+|[53. 最大子数组和](https://leetcode.cn/problems/maximum-subarray/)|Easy|Kadane算法|⭐⭐⭐⭐⭐|
+|[322. 零钱兑换](https://leetcode.cn/problems/coin-change/)|Medium|背包DP|⭐⭐⭐⭐|
+|[300. 最长递增子序列](https://leetcode.cn/problems/longest-increasing-subsequence/)|Medium|二分优化DP|⭐⭐⭐⭐⭐|
+
+---
+
+### **5. 回溯 & DFS/BFS**
+
+|题目|难度|关键点|频率|
+|---|---|---|---|
+|[46. 全排列](https://leetcode.cn/problems/permutations/)|Medium|回溯模板|⭐⭐⭐⭐|
+|[78. 子集](https://leetcode.cn/problems/subsets/)|Medium|回溯/位运算|⭐⭐⭐⭐|
+|[200. 岛屿数量](https://leetcode.cn/problems/number-of-islands/)|Medium|DFS/BFS|⭐⭐⭐⭐⭐|
+|[79. 单词搜索](https://leetcode.cn/problems/word-search/)|Medium|回溯 + 剪枝|⭐⭐⭐⭐|
+
+---
+
+### **6. 堆 & 优先队列**
+
+|题目|难度|关键点|频率|
+|---|---|---|---|
+|[215. 数组中的第K个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/)|Medium|快排思想/堆|⭐⭐⭐⭐⭐|
+|[347. 前 K 个高频元素](https://leetcode.cn/problems/top-k-frequent-elements/)|Medium|哈希 + 堆|⭐⭐⭐⭐|
+
+---
+
+### **7. 滑动窗口 & 双指针**
+
+|题目|难度|关键点|频率|
+|---|---|---|---|
+|[3. 无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)|Medium|滑动窗口|⭐⭐⭐⭐⭐|
+|[11. 盛最多水的容器](https://leetcode.cn/problems/container-with-most-water/)|Medium|双指针|⭐⭐⭐⭐|
+|[438. 找到字符串中所有字母异位词](https://leetcode.cn/problems/find-all-anagrams-in-a-string/)|Medium|滑动窗口|⭐⭐⭐⭐|
+
+---
+
+### **✅ 如何高效刷题？**
+
+1. **优先掌握 ⭐⭐⭐⭐⭐ 题目**，尤其是：
+    
+    - **两数之和**、**LRU缓存**、**反转链表**
+        
+    - **二叉树层序遍历**、**岛屿数量**
+        
+    - **最大子数组和**、**零钱兑换**
+        
+    - **无重复字符的最长子串**
+        
+2. **同类题目一起刷**（如先刷完所有二叉树题目再刷DP）。
+    
+3. **面试前重点复习 Hot 100**，80% 的面试题都来自这里。
