@@ -229,7 +229,7 @@
 1. 模版1
 	```java
 	Stack<Integer> s = new Stack<>();
-    s.push(0);
+	s.push(0);
 	for(int j = 0; j < nums2.length; j++){
 		while(!s.isEmpty() && nums2[j] > nums2[s.peek()]){
 			int index = s.pop();
