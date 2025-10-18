@@ -740,7 +740,6 @@ Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步
 核心思路就是利用redis的setnx方法来表示获取锁，该方法含义是redis中如果没有这个key，则插入成功，返回1，在stringRedisTemplate中返回true，  如果有这个key则插入失败，则返回0，在stringRedisTemplate返回false，我们可以通过true，或者是false，来表示是否有线程成功插入key，成功插入的key的线程我们认为他就是获得到锁的线程。
 
 ```java
-
 private boolean tryLock(String key) {
     Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, "1", 10, TimeUnit.SECONDS);
     return BooleanUtil.isTrue(flag);
@@ -785,12 +784,18 @@ private void unlock(String key) {
             // 5.不存在，返回错误
             if(shop == null){
                  //将空值写入redis
-                stringRedisTemplate.opsForValue().set(key,"",CACHE_NULL_TTL,TimeUnit.MINUTES);
+                stringRedisTemplate
+                .opsForValue()
+                .set(key,"",CACHE_NULL_TTL,TimeUnit.MINUTES);
                 //返回错误信息
                 return null;
             }
             //6.写入redis
-            stringRedisTemplate.opsForValue().set(key,JSONUtil.toJsonStr(shop),CACHE_NULL_TTL,TimeUnit.MINUTES);
+            stringRedisTemplate
+	            .opsForValue()
+	            .set(key,
+		            JSONUtil.toJsonStr(shop),
+		            CACHE_NULL_TTL,TimeUnit.MINUTES);
 
         }catch (Exception e){
             throw new RuntimeException(e);
@@ -890,10 +895,7 @@ public Shop queryWithLogicalExpire( Long id ) {
 基于StringRedisTemplate封装一个缓存工具类，满足下列需求：
 
 * 方法1：将任意Java对象序列化为json并存储在string类型的key中，并且可以设置TTL过期时间
-* 方法2：将任意Java对象序列化为json并存储在string类型的key中，并且可以设置逻辑过期时间，用于处理缓
-
-存击穿问题
-
+* 方法2：将任意Java对象序列化为json并存储在string类型的key中，并且可以设置逻辑过期时间，用于处理缓存击穿问题
 * 方法3：根据指定的key查询缓存，并反序列化为指定类型，利用缓存空值的方式解决缓存穿透问题
 * 方法4：根据指定的key查询缓存，并反序列化为指定类型，需要利用逻辑过期解决缓存击穿问题
 
@@ -1070,7 +1072,7 @@ private CacheClient cacheClient;
     public Result queryById(Long id) {
         // 解决缓存穿透
         Shop shop = cacheClient
-                .queryWithPassThrough(CACHE_SHOP_KEY, id, Shop.class, this::getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
+                .queryWithPassThrough(CACHE_SHOP_KEY, id, Shop.class, this:: getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
 
         // 互斥锁解决缓存击穿
         // Shop shop = cacheClient
@@ -1139,7 +1141,7 @@ public class RedisIdWorker {
 
     public long nextId(String keyPrefix) {
         // 1.生成时间戳
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTim9e now = LocalDateTime.now();
         long nowSecond = now.toEpochSecond(ZoneOffset.UTC);
         long timestamp = nowSecond - BEGIN_TIMESTAMP;
 
@@ -1206,7 +1208,7 @@ tb_seckill_voucher：优惠券的库存、开始抢购时间，结束抢购时�
 
 而代金券由于优惠力度大，所以像第二种卷，就得限制数量，从表结构上也能看出，特价卷除了具有优惠卷的基本信息以外，还具有库存，抢购时间，结束时间等等字段
 
-**新增普通卷代码：  **VoucherController
+**新增普通卷代码**：  VoucherController
 
 ```java
 @PostMapping
@@ -2252,7 +2254,7 @@ private void renewExpiration() {
 
 优化方案：我们将耗时比较短的逻辑判断放入到redis中，比如是否库存足够，比如是否一人一单，这样的操作，只要这种逻辑可以完成，就意味着我们是一定可以下单完成的，我们只需要进行快速的逻辑判断，根本就不用等下单逻辑走完，我们直接给用户返回成功， 再在后台开一个线程，后台线程慢慢的去执行queue里边的消息，这样程序不就超级快了吗？而且也不用担心线程池消耗殆尽的问题，因为这里我们的程序中并没有手动使用任何线程池，当然这里边有两个难点
 
-第一个难点是我们怎么在redis中去快速校验一人一单，还有库存判断
+第一个难点是我们**怎么在redis中去快速校验一人一单，还有库存判断**
 
 第二个难点是由于我们校验和tomct下单是两个线程，那么我们如何知道到底哪个单他最后是否成功，或者是下单完成，为了完成这件事我们在redis操作完之后，我们会将一些信息返回给前端，同时也会把这些信息丢到异步queue中去，后续操作中，可以通过这个id来查询我们tomcat中的下单逻辑是否完成了。
 
@@ -2543,7 +2545,7 @@ private void init() {
 
 
 
-### 7.3 Redis消息队列-基于PubSub的消息队列
+### 7.3 Redis消息队列-==基于PubSub的消息队列==
 
 PubSub（发布订阅）是Redis2.0版本引入的消息传递模型。顾名思义，消费者可以订阅一个或多个channel，生产者向对应channel发送消息后，所有订阅者都能收到相关消息。
 
@@ -2566,7 +2568,7 @@ PubSub（发布订阅）是Redis2.0版本引入的消息传递模型。顾名思
 
 
 
-### 7.4 Redis消息队列-基于Stream的消息队列
+### 7.4 Redis消息队列-==基于Stream的消息队列==
 
 Stream 是 Redis 5.0 引入的一种新数据类型，可以实现一个功能非常完善的消息队列。
 
@@ -3009,7 +3011,7 @@ public Result queryBlogLikes(Long id) {
         return Result.ok(Collections.emptyList());
     }
     // 2.解析出其中的用户id
-    List<Long> ids = top5.stream().map(Long::valueOf).collect(Collectors.toList());
+    List<Long> ids = top5.stream().map(Long:: valueOf).collect(Collectors.toList());
     String idStr = StrUtil.join(",", ids);
     // 3.根据用户id查询用户 WHERE id IN ( 5 , 1 ) ORDER BY FIELD(id, 5, 1)
     List<UserDTO> userDTOS = userService.query()
@@ -3456,7 +3458,7 @@ void loadShopData() {
     // 1.查询店铺信息
     List<Shop> list = shopService.list();
     // 2.把店铺分组，按照typeId分组，typeId一致的放到一个集合
-    Map<Long, List<Shop>> map = list.stream().collect(Collectors.groupingBy(Shop::getTypeId));
+    Map<Long, List<Shop>> map = list.stream().collect(Collectors.groupingBy(Shop:: getTypeId));
     // 3.分批完成写入Redis
     for (Map.Entry<Long, List<Shop>> entry : map.entrySet()) {
         // 3.1.获取类型id

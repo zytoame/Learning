@@ -111,7 +111,7 @@ Linux系统为了**提高IO效率**，会在用户空间和内核空间都加入
 
 用户去读取数据时，会去先发起**recvform**一个命令，去尝试从内核上加载数据，如果内核没有数据，那么用户就会**等待**，此时内核会去从硬件上读取数据，内核读取数据之后，会把数据拷贝到用户态，拷贝过程中，用户进程依然**阻塞等待**，拷贝完成，用户进程解除阻塞，并且返回ok，整个过程，都是阻塞等待的，
 
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728205804905.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728205804905.png)
 
 
 ### **非阻塞IO（Nonblocking IO）**
@@ -120,18 +120,18 @@ Linux系统为了**提高IO效率**，会在用户空间和内核空间都加入
 
 非阻塞IO模型中，用户进程在第一个阶段是非阻塞，第二个阶段是阻塞状态。虽然是非阻塞，但性能并没有得到提高。而且**忙等机制会导致CPU空转，CPU使用率暴增**。
 
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728205727122.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728205727122.png)
 
 ### **==IO多路复用==**（IO Multiplexing）
 
 **IO多路复用**是**利用单个线程来同时监听多个FD**，并在某个FD可读、可写时得到通知，从而避免无效的等待，充分利用CPU资源。
 
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728210936003.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728210936003.png)
 
 **select**允许用户程序一次性监听多个文件描述符（如套接字），减少无效等待，避免忙轮询
 
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728210649115.png)
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728210800128.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728210649115.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728210800128.png)
 
 
 **select**是Linux最早是由的I/O多路复用技术：
@@ -140,8 +140,8 @@ Linux系统为了**提高IO效率**，会在用户空间和内核空间都加入
 执行select函数，将整个fd发给内核态，内核态会去遍历用户态传递过来的数据，如果发现这里边的数据都没有就绪，就休眠，直到有数据准备好时，就会被唤醒，唤醒之后，再次遍历一遍，处理掉没有准备好的数据，最后再将这个FD集合写回到用户态中去。
 用户态并不知道谁处理好了，所以需要遍历，找到对应准备好数据的节点，再去发起读请求。
 
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728211854876.png)
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728212334857.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728211854876.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728212334857.png)
 
 ### IO多路复用-epoll
 **epoll模式**是对select和poll的改进，它提供了三个函数：
@@ -155,7 +155,7 @@ Linux系统为了**提高IO效率**，会在用户空间和内核空间都加入
 第三个调用**epoll_wait**函数
 就去等待，在**用户态创建一个空的events数组**，当就绪之后，我们的回调函数会**把数据添加到list_head中**去，当调用这个函数的时候，会去检查list_head，当然这个过程需要参考配置的等待时间，可以等一定时间，也可以一直等， 如果在此过程中，检查到了list_head中有数据会将数据添加到链表中，此时将数据放入到events数组中，并且返回对应的操作的数量，用户态的此时收到响应后，从events中拿到对应准备好的数据的节点，再去调用方法去拿数据。
 
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728214253802.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728214253802.png)
 
 **==小总结：==**
 
@@ -171,12 +171,12 @@ poll模式的问题：
 * 基于epoll实例中的红黑树保存要监听的FD，**理论上无上限**，而且**增删改查效率都非常高**
 * 每个FD只需要执行一次epoll_ctl添加到红黑树，以后每次epol_wait无需传递任何参数，**无需重复拷贝**FD到内核空间
 * 利用ep_poll_callback机制来监听FD状态，**无需遍历所有FD**，因此性能不会随监听的FD数量增多而下降
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728214112232.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728214112232.png)
 ### ET，LT
 当FD有数据可读时，我们调用epoll_wait（或者select、poll）可以得到通知。但是**事件通知的模式**有两种：
 * LevelTriggered：简称LT，也叫做水平触发。只要某个FD中有数据可读，每次调用epoll_wait都会得到通知。
 * EdgeTriggered：简称ET，也叫做边沿触发。只有在某个FD有状态变化时，调用epoll_wait才会被通知。
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728215223611.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728215223611.png)
 如果我们采用LT模式，因为FD中仍有1kb数据，则第⑤步依然会返回结果，并且得到通知
 如果我们采用ET模式，因为第③步已经消费了FD可读事件，第⑤步FD状态没有变化，因此epoll_wait不会返回，数据无法读取，客户端响应超时。
 
@@ -190,7 +190,7 @@ poll模式的问题：
 创建好了之后，会去**调用epoll_ctl函数**，此函数会会**将需要监听的数据添加到rb_root**中去，并且对当前这些存在于红黑树的节点设置回调函数，当这些被监听的数据一旦准备完成，就会被调用，而**调用的结果就是将红黑树的fd添加到list_head中**去(但是此时并没有完成)
 
 3、当第二步完成后，就会**调用epoll_wait函数**，这个函数会去校验是否有数据准备完毕（因为数据一旦准备就绪，就会被回调函数添加到list_head中），在等待了一段时间后(可以进行配置)，如果等够了超时时间，则返回没有数据，如果有，则进一步判断当前是什么事件，如果是建立连接时间，则**调用accept() 接受客户端socket**，拿到建立连接的socket，然后建立起来连接，如果是其他事件，则把数据进行写出
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728215758345.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728215758345.png)
 
 ### 信号驱动IO
 
@@ -211,7 +211,7 @@ poll模式的问题：
 * 用户进程处理数据
 
 当有大量IO操作时，信号较多，SIGIO处理函数不能及时处理可能导致信号队列溢出，而且内核空间与用户空间的频繁信号交互性能也较低。
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728220023229.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728220023229.png)
 ![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728220141878.png)
 ![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250728220342815.png)
 	核心业务是单线程，命令处理是单线程
@@ -347,9 +347,9 @@ Redis 的单线程设计以 **简单性、高性能和低延迟** 为核心，
 ---
 
 **单线程Redis网络模型**
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250729145141007.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250729145141007.png)
 多线程部分
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250729150554682.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250729150554682.png)
 
 ## 通信协议
 
@@ -371,7 +371,7 @@ Redis**通信**一般分两步（不包括pipeline和PubSub）：
 	◆ 如果大小为-1,则代表不存在:"$-1\r\n"
 
 ◆**数组**:首字节是==‘ * ==’ , 后面跟上数组元素个数,再跟上元素,元素数据类型不限:
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250729153105517.png)
+![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250729153105517.png)
 
 ## 内存策略
 
@@ -440,4 +440,4 @@ LFU的访问次数之所以叫做逻辑访问次数，是因为并不是每次ke
 * 访问次数会随时间衰减，距离上一次访问时间每隔 lfu_decay_time 分钟，计数器 -1
 
 
-![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250729161905893.png)
+![g](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250729161905893.png)

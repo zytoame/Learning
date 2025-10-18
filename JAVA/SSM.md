@@ -13,21 +13,21 @@ spring的设计模式：单例、工厂、观察者（监听器）、模板方�
 		1. ![Pasted image 20250711162533](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711162533.png)![Pasted image 20250711162655](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711162655.png)
 	3. 实例化bean的三种
 		1. 构造方法
-			1. ![Pasted image 20250711171205](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171205.png)
+			1. ![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171205.png)
 		2. 静态工厂实例化
-			1. ![Pasted image 20250711171136](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171136.png)
+			1. ![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171136.png)
 		3. 实例工厂
-			1. ==实用==![Pasted image 20250711173003](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711173003.png)
-			2. ![Pasted image 20250711171918](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171918.png)
-	4. 生命周期
+			1. ==实用==![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711173003.png)
+			2. ![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711171918.png)
+	4. **==生命周期==**
 		1. **Bean创建流程**
 			1. 解析`@Configuration`类
 			2. 创建配置类实例
 			3. 处理配置类的依赖注入（@Resource/@Autowired）
 			4. 调用`@Bean`方法或接口方法（如`addInterceptors`）
-		2. ![Pasted image 20250711175009](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175009.png)
-		3. ![Pasted image 20250711175034](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175034.png)
-		4. ![Pasted image 20250711175059](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175059.png)
+		2. ![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175009.png)
+		3. ![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175034.png)
+		4. ![](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250711175059.png)
 3. 入门案例：
 	1. 导入坐标：pom.xml文件中< groupId>org.springframework< /groupId>  < artifactId>spring-context< /artifactId>  < version>5.2.10.RELEASE< /version>
 	2. 定义Spring管理的类（接口）
@@ -492,6 +492,28 @@ jdbcConfig文件：![Pasted image 20250712180658](https://kmk1132-obs-1370539359
 			- ![Pasted image 20250715140309](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140309.png)
 		- 定义数据层接口Dao与映射配置@Mapper![Pasted image 20250715140404](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140404.png)
 		- 测试![Pasted image 20250715140348](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250715140348.png)
+- ### SpringBoot里面有哪些重要的注解？还有一个配置相关的注解是哪个？
+
+Spring Boot 中一些常用的注解包括：
+
+- **@SpringBootApplication**：用于标注主应用程序类，标识一个Spring Boot应用程序的入口点，同时启用自动配置和组件扫描。
+- **@Controller**：标识控制器类，处理HTTP请求。
+- **@RestController**：结合@Controller和@ResponseBody，返回RESTful风格的数据。
+- **@Service**：标识服务类，通常用于标记业务逻辑层。
+- **@Repository**：标识数据访问组件，通常用于标记数据访问层。
+- **@Component**：通用的Spring组件注解，表示一个受Spring管理的组件。
+- **@Autowired**：用于自动装配Spring Bean。
+- **@Value**：用于注入配置属性值。
+- **@RequestMapping**：用于映射HTTP请求路径到Controller的处理方法。
+- **@GetMapping**、@PostMapping、@PutMapping、@DeleteMapping：简化@RequestMapping的GET、POST、PUT和DELETE请求。
+
+另外，一个与配置相关的重要注解是：
+
+- **@Configuration**：用于指定一个类为配置类，其中定义的bean会被Spring容器管理。通常与@Bean配合使用，@Bean用于声明一个Bean实例，由Spring容器进行管理。
+
+###
+- ![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250907111305791.png)
+
 
 ## @Component和@Transactional和@Configuration
 
@@ -835,3 +857,82 @@ public class UserService {
 
 --- 
 
+
+# Spring MVC 和 Spring Boot 都是 Spring 生态系统中的重要组成部分，
+---
+
+### 1. **定位与目标**
+| **Spring MVC** | **Spring Boot** |
+|----------------|-----------------|
+| 是一个**Web框架**，用于构建基于MVC架构的Web应用程序。 | 是一个**快速开发框架**，旨在简化Spring应用的初始搭建和开发过程。 |
+| 专注于解决**Web层**的问题（如控制器、视图解析、请求处理）。 | 提供**一站式解决方案**，整合了Spring生态系统（如Spring MVC、Spring Data、Spring Security等）。 |
+
+---
+
+### 2. **配置方式**
+| **Spring MVC** | **Spring Boot** |
+|----------------|-----------------|
+| 需要**大量显式配置**（如XML配置、Java配置类、web.xml部署描述符）。 | **约定优于配置**，提供自动配置（Auto-configuration），大部分配置无需手动编写。 |
+| 示例：需手动配置DispatcherServlet、视图解析器、组件扫描等。 | 示例：只需一个`@SpringBootApplication`注解即可启动内嵌Web服务器和自动配置。 |
+
+---
+
+### 3. **依赖管理**
+| **Spring MVC** | **Spring Boot** |
+|----------------|-----------------|
+| 需要手动管理依赖版本（如通过Maven/Gradle指定Spring相关jar的版本）。 | 通过**Starter依赖**（如`spring-boot-starter-web`）自动管理依赖和版本兼容性。 |
+| 容易遇到依赖冲突或版本不匹配问题。 | 简化依赖管理，减少冲突。 |
+
+---
+
+### 4. **内嵌服务器**
+| **Spring MVC** | **Spring Boot** |
+|----------------|-----------------|
+| 通常需要**外部Web服务器**（如Tomcat、Jetty）部署WAR包。 | 默认集成**内嵌服务器**（Tomcat、Jetty或Undertow），可直接打包为可执行JAR运行。 |
+
+---
+
+### 5. **开发效率**
+| **Spring MVC** | **Spring Boot** |
+|----------------|-----------------|
+| 开发流程较长，需手动整合框架（如Spring Core、Spring MVC、持久层框架等）。 | **开箱即用**，快速创建独立、生产级的Spring应用，极大提升开发效率。 |
+
+---
+
+### 6. **适用场景**
+- **Spring MVC**：  
+  适合需要**精细控制Web层配置**的传统项目，或与其他非Spring框架（如Struts）混合使用的场景。
+- **Spring Boot**：  
+  适合**快速开发微服务、REST API或全栈应用**，追求约定优于配置和自动化。
+
+---
+
+### 关系说明：
+- Spring Boot **内部整合了Spring MVC**（通过`spring-boot-starter-web`），因此使用Spring Boot时实际上仍在用Spring MVC处理Web请求。
+- Spring Boot是对Spring整个生态的**封装和增强**，而Spring MVC只是其中一个模块。
+
+---
+
+### 代码对比示例：
+#### Spring MVC项目需手动配置：
+```java
+// web.xml中配置DispatcherServlet
+// 需编写配置类：@Configuration, @EnableWebMvc, 视图解析器等
+```
+#### Spring Boot项目：
+```java
+@SpringBootApplication // 包含自动配置、组件扫描等
+public class App {
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args); // 内嵌服务器直接启动
+    }
+}
+```
+
+---
+
+### 总结：
+- 如果你需要**轻量级Web框架**且希望完全控制配置，选**Spring MVC**。
+- 如果你希望**快速搭建项目**、减少配置工作量，选**Spring Boot**（它已经包含了Spring MVC）。
+
+如果需要更具体的示例或深入某个点，可以告诉我！也可以使用 `@vault` 搜索你笔记中相关的Spring内容。

@@ -2,6 +2,7 @@
 用于JDBC开发
 主要特性之一：动态sql
 
+MyBatis 在 **SQL 灵活性**、**动态 SQL 支持**、**结果集映射**和**与 Spring 整合**方面表现卓越，尤其适合重视 SQL 可控性的项目。
 ### **Mapper 接口 vs 传统方式**
 
 | 特性            | Mapper 接口                                                                                                                                                    | 传统方式（直接调用 SqlSession）                                                                                                           |
@@ -208,6 +209,112 @@ MyBatis接口方法中可以接收各种各样的参数,MyBatis底层对于这�
 	map.put("param2",参数值2)
 	map.put("agr1",参数值2）
 ## 注解完成增删改查（完成简单功能）
+
+
+
+## 还记得JDBC连接数据库的步骤吗？
+
+使用Java JDBC连接数据库的一般步骤如下：
+
+1. **加载数据库驱动程序**：在使用JDBC连接数据库之前，需要加载相应的数据库驱动程序。可以通过 Class.forName("com.mysql.jdbc.Driver") 来加载MySQL数据库的驱动程序。不同数据库的驱动类名会有所不同。
+2. **建立数据库连接**：使用 DriverManager 类的 getConnection(url, username, password) 方法来连接数据库，其中url是数据库的连接字符串（包括数据库类型、主机、端口等）、username是数据库用户名，password是密码。
+3. **创建 Statement 对象**：通过 Connection 对象的 createStatement() 方法创建一个 Statement 对象，用于执行 SQL 查询或更新操作。
+4. **执行 SQL 查询或更新操作**：使用 Statement 对象的 executeQuery(sql) 方法来执行 SELECT 查询操作，或者使用 executeUpdate(sql) 方法来执行 INSERT、UPDATE 或 DELETE 操作。
+5. **处理查询结果**：如果是 SELECT 查询操作，通过 ResultSet 对象来处理查询结果。可以使用 ResultSet 的 next() 方法遍历查询结果集，然后通过 getXXX() 方法获取各个字段的值。
+6. **关闭连接**：在完成数据库操作后，需要逐级关闭数据库连接相关对象，即先关闭 ResultSet，再关闭 Statement，最后关闭 Connection。
+
+以下是一个简单的示例代码：
+
+```java
+import java.sql.*;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            // 加载数据库驱动程序
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // 建立数据库连接
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydatabase", "username", "password");
+
+            // 创建 Statement 对象
+            Statement statement = connection.createStatement();
+
+            // 执行 SQL 查询
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM mytable");
+
+            // 处理查询结果
+            while (resultSet.next()) {
+              // 处理每一行数据
+            }
+
+            // 关闭资源
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+
+## 如果项目中要用到原生的mybatis去查询，该怎样写？
+
+步骤概述：
+
+1. **配置MyBatis：** 在项目中配置MyBatis的数据源、SQL映射文件等。
+2. **创建实体类：** 创建用于映射数据库表的实体类。
+3. **编写SQL映射文件：** 创建XML文件，定义SQL语句和映射关系。
+4. **编写DAO接口：** 创建DAO接口，定义数据库操作的方法。
+5. **编写具体的SQL查询语句：** 在DAO接口中定义查询方法，并在XML文件中编写对应的SQL语句。
+6. **调用查询方法：** 在服务层或控制层调用DAO接口中的方法进行查询。
+
+详细步骤：
+
+1. **配置MyBatis：** 在配置文件中配置数据源、MyBatis的Mapper文件位置等信息。
+2. **创建实体类：** 创建与数据库表对应的实体类，字段名和类型需与数据库表保持一致。
+
+```
+public class User {
+    private Long id;
+    private String username;
+    private String email;
+    // Getters and setters
+}
+```
+
+1. **编写SQL映射文件：** 在resources目录下创建XML文件，定义SQL语句和映射关系。
+
+```
+<!-- userMapper.xml -->
+<mapper namespace="com.example.dao.UserMapper">
+    <select id="selectUserById" resultType="com.example.model.User">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+</mapper>
+```
+
+1. **编写DAO接口：** 创建DAO接口，定义查询方法。
+
+```
+public interface UserMapper {
+    User selectUserById(Long id);
+}
+```
+
+1. **编写具体的SQL查询语句：** 在XML文件中编写对应的SQL语句。
+2. **调用查询方法：** 在服务层或控制层中调用DAO接口中的方法进行查询。
+
+```
+// 在Service层中调用
+User user = userMapper.selectUserById(1);
+```
+
+通过以上步骤，你可以利用原生的MyBatis框架来进行数据库查询操作。请确保配置正确、SQL语句准确并与数据库字段匹配，以确保查询的准确性和高效性。
 
 ## MyBatis Plus
 链式调用

@@ -24,23 +24,698 @@
 		- `p[0] - q[0]`是 `Comparator` 的比较规则。如果 `p[0]` 小于 `q[0]`，则 `p` 会排在 `q` 前面（因为结果是负数）。
 		- `compare(p, q)` 方法返回一个整数：如果返回负数，`p` 排在 `q` 前面。
 	- 高效复制数组元素：arraycopy(Object src源数组, int srcPos源数组要复制的起始位置, Object dest目标数组, int destPos目标数组接收复制的起始位置, int length复制的数据长度)
+		
 - c++
 	- 将i接入ans：            ans.push_back(i);         
 	- 删除最后一个字符：ans.pop_back(); 
 	- 表示最后一个字符串：ans.back();
 	- **给nums从小到大排序**：ranges::sort(nums);
-- 读取数据
+	
+- **读取数据**
 	- 字符串(字母数字)：string a; cin >> a;   
 	- 有空格读取整行，可以逐行读取：getline(cin, a);
 	- 单行，单字符：cin >> a >> b >> c;
+	-  多种输入方式
+		
+		- 方式1：固定长度数组
+		```java
+		// 已知数组长度
+		int n = scanner.nextInt();
+		int[] prices = new int[n];
+		for (int i = 0; i < n; i++) {
+		    prices[i] = scanner.nextInt();
+		}
+		```
+		- 方式2：不确定长度的数组
+		
+		```java
+		// 输入以-1结束（特殊值）
+		List<Integer> list = new ArrayList<>();
+		while (scanner.hasNextInt()) {
+		    int num = scanner.nextInt();
+		    if (num == -1) break;
+		    list.add(num);
+		}
+		int[] prices = list.stream().mapToInt(i -> i).toArray();
+		
+		// 不确定长度，没有结束标志
+		// 读取一行输入，按空格分割
+        String input = scanner.nextLine();
+        String[] strArray = input.split(" ");
+        
+        // 转换为整数数组
+        int[] prices = new int[strArray.length];
+        for (int i = 0; i < strArray.length; i++) {
+            prices[i] = Integer.parseInt(strArray[i]);
+        }
+		```
+		
+		-  方式3：从字符串读取
+		
+		```java
+		// 输入如："[7,1,5,3,6,4]"
+		String input = scanner.nextLine();
+		input = input.replace("[", "").replace("]", "");
+		String[] parts = input.split(",");
+		int[] prices = new int[parts.length];
+		for (int i = 0; i < parts.length; i++) {
+		    prices[i] = Integer.parseInt(parts[i].trim());
+		}
+		```
+		
 - (a||b)
 	因为题目确保当 " 𝑎 和 𝑏同时为零" 时程序结束，所以不满足 " 𝑎 和 𝑏 同时为零" 这个条件的时候，该一直能够输入，也就是 !(a= =0 && b= =0)；
 	化简后得到 (a != 0 || b != 0)，又表达式expr != 0和expr是等价的，所以这个条件又可以表示成(a||b)，也就有了这种写法。
 - `while(t--)`等价于`while(t-- != 0)`
-- ### 二分查找
-	- 闭区间
+## 数组
+- ### 二分查找O(logn)
+	- 区间范围的选择，开还是闭
 	- 左闭右开
+	```java
+		int left = 0, right = n, ans = 0;
+		while(left < right){
+			int mid = left + (right - left)/2;
+			if(关于mid < target) left = mid+1;
+			else if(关于mid > target) right = mid;
+			else ans = mid;
+		}
+	```
+	- 开区间
+	```java
+		int left = -1, right = n, ans = 0;
+		while(left+1 < right){  //注意是开区间，要保证区间内有值
+			int mid = left + (right - left)/2;
+			if(关于mid < target) left = mid;
+			else if(关于mid > target) right = mid;
+			else ans = mid;
+		}
+	```
 	- 错误
+		- 计算平方根的时候防止溢出
+			- // 64 位整数的平方根上限private static final long SQRT_LONG_MAX = (long) **Math.sqrt**(Long.MAX_VALUE);
+- ### 双指针
+	- 快慢指针
+		- 快指针：寻找新数组的元素 ，新数组就是不含有⽬标元素的数组
+		- 慢指针：指向更新 新数组下标的位置
+	- 双向指针O（n）
+		```java
+		for(int left = 0，right = n-1; left <= right ;){
+			if(){left++;}
+			if(){right--;}
+		}
+		```
+	- 滑动窗口：时间复杂度O（n）
+		```java
+		int left = 0;
+		for(int right = 0; right < n; right++){
+			计算right，移动右边窗口
+			while(超出范围){
+				将左边移出窗口
+				left++；
+			}
+			计算答案:窗口长度：ans = Math.max/min(anx, right-left+1);
+		}	
+		```
+- ### 螺旋矩阵
+	- 时间复杂度O（mn）
+
+## ![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250916163123410.png)
+## 链表
+
+1. 反转链表
+	```java
+	//双指针时间复杂度O（n），空间1
+	ListNode pre = null; ListNode cur = head;
+	ListNode tmp;
+	while(cur != null){
+		tmp = cur.next;
+		//反转链表
+		cur.next = pre;
+		//移动指针
+		cur = tmp; pre = cur;
+	}
+	return cur;
+	//头插法,虚拟头结点
+	ListNode dummyHead = new ListNode(-1); dummyHead.next = null;
+	ListNode cur = head;
+	while(cur != null){
+		ListNode tmp = cur.next;
+		//头插法
+		cur.next = dummyHead.next;
+		dummyHead.next = cur;  cur = tmp; 
+	}
+	return dummyHead.next;
+	```
+2. 设计链表
+	```java
+	class Node{
+	        Node next;
+	        int val;
+	        public Node(int val){
+	            this.val = val;
+	        }
+	    }
+	class MyLinkedList {
+	    Node head;
+	    int size;
+	    //初始化
+	    public MyLinkedList() {
+	        size = 0;
+	        head = new Node(0);
+	    }
+	    //获取索引对应的链表的值
+	    public int get(int index) {
+	        if(index < 0 || index >= size) return -1;
+	        Node cur = head;
+	        for(int i = 0; i <= index; i++){
+	            cur = cur.next;
+	        }
+	        return cur.val;
+	    }
+	    //插入头节点
+	    public void addAtHead(int val) {
+	        addAtIndex(0,val);
+	    }
+	    //添加尾节点
+	    public void addAtTail(int val) {
+	        addAtIndex(size,val);
+	    }
+	    //在指定位置插入节点
+	    public void addAtIndex(int index, int val) {
+	        if(index > size) return;
+	        size++;
+	        Node pre = head;
+	        for(int i = 0; i < index; i++){
+	            pre = pre.next;
+	        }
+	        Node add = new Node(val);
+	        add.next = pre.next;
+	        pre.next = add;
+	    }
+	    //在指定位置删除节点
+	    public void deleteAtIndex(int index) {
+	        if(index < 0 || index >= size) return;
+	        size--;
+	        Node pre = head;
+	        for(int i = 0; i < index; i++){
+	            pre = pre.next;
+	        }
+	        pre.next = pre.next.next;
+	    }
+	}
+	```
+## 单调栈
+
+1. 模版1
+	```java
+	Stack<Integer> s = new Stack<>();
+    s.push(0);
+	for(int j = 0; j < nums2.length; j++){
+		while(!s.isEmpty() && nums2[j] > nums2[s.peek()]){
+			int index = s.pop();
+			if(map.containsKey(nums2[index])){
+				ans[map.get(nums2[index])] = nums2[j];  
+			}
+		}
+		s.push(j);
+	}
+```
+	
+2. 接雨水（找左侧最高和右侧最高）
+	```java
+	class Solution {
+	    public int trap(int[] height) {
+	        //单调栈
+	        int n = height.length;
+	        int ans = 0;
+	        Stack<Integer> s = new Stack<>();
+	        s.push(0);
+	        /*for(int i = 1; i < n; i++){
+	            if(height[i] < height[s.peek()]){
+	                s.push(i);
+	            }else if(height[i] == height[s.peek()]){
+	                s.pop();
+	                s.push(i);
+	            }else{
+	                while(!s.isEmpty() && height[i] > height[s.peek()]){
+	                    int midH = height[s.pop()];
+	                    if(!s.isEmpty()){
+	                        int leftH = height[s.peek()];
+	                        ans += (Math.min(leftH, height[i]) - midH) * (i-s.peek()-1);
+	                    }
+	                }
+	                s.push(i);
+	            }
+	        }*/
+	        for(int i = 0; i < n; i++){
+		        while(!s.isEmpty() && height[i] > height[s.peek()]){
+					int midH = height[s.pop()];
+					if(!s.isEmpty()){
+						int leftH = height[s.peek()];
+						ans += (Math.min(leftH, height[i]) - midH) * (i-s.peek()-1);
+					}
+				}
+				s.push(i);
+	        }
+	        return ans;
+	    }
+	}
+	```
+	```java
+	class Solution {
+	    public int trap(int[] height) {
+	        //双指针
+	        int n = height.length;
+	        int ans = 0;
+	        int[] leftH = new int[n]; //当前的左侧最高柱子
+	        int[] rightH = new int[n];//当前的右侧最高柱子
+	
+	        leftH[0] = height[0];
+	        for(int i = 1; i < n; i++){
+	            leftH[i] = Math.max(leftH[i-1], height[i]);
+	        }
+	
+	        rightH[n-1] = height[n-1];
+	        for(int i = n-2; i >= 0; i--){
+	            rightH[i] = Math.max(height[i], rightH[i+1]);
+	        }
+	
+	        for(int i = 0; i < n; i++){
+	            int count = Math.min(leftH[i], rightH[i]) - height[i];
+	            if(count > 0) ans += count;
+	        }
+	        return ans;
+	    }
+	}
+	```
+	```java
+	class Solution {
+	    public int trap(int[] height) {
+	        //双指针
+	        int n = height.length;
+	        int res = 0;
+	        int left = 0, right = n - 1;
+	        int leftMax = height[left], rightMax = height[right];
+	        while(left < right){
+	            if(height[left] < height[right]){
+	                left++;
+	                leftMax = Math.max(leftMax, height[left]);
+	                res += leftMax - height[left];
+	            }else{
+	                right--;
+	                rightMax = Math.max(rightMax, height[right]);
+	                res += rightMax - height[right];
+	            }
+	        }
+	        return res;
+	    }
+	}
+	```
+
+2. 连续柱子面积（找左侧第一个小的和右侧第一个小的）
+	```java
+	class Solution {
+	    public int largestRectangleArea(int[] heights) {
+	        int n = heights.length;
+	        int ans = 0;
+	        Stack<Integer> s = new Stack<>();
+	        s.push(-1);
+	        s.push(0);
+	        /*for(int i = 1; i < n; i++){
+	            if(heights[i] > heights[s.peek()]){
+	                s.push(i);
+	            }else if(heights[i] == heights[s.peek()]){
+	                s.pop();
+	                s.push(i);
+	            }else{
+	                while(s.peek() != -1 && heights[i] < heights[s.peek()]){
+	                    int h = heights[s.pop()];
+	                    int left = s.peek();
+	                    ans = Math.max(ans, h*(i-left-1));
+	                }
+	                s.push(i);
+	            }
+	        }*/
+	        for(int i = 1; i < n; i++){
+	            while(s.peek() != -1 && heights[i] <= heights[s.peek()]){
+	                int h = heights[s.pop()];
+	                int left = s.peek();
+	                ans = Math.max(ans, h*(i-left-1));
+	            }
+	            s.push(i);
+	        }
+	        //处理剩余元素
+	        while(s.peek() != -1){
+	            int h = heights[s.pop()];
+	            int left = s.peek();
+	            ans = Math.max(ans, h*(n-left-1));
+	        }
+	        return ans;
+	    }
+	}
+	```
+	```java
+	class Solution {
+	    public int largestRectangleArea(int[] heights) {
+	        int n = heights.length;
+	        int[] left = new int[n]; //左侧第一个小于当前值的下标
+	        int[] right = new int[n];
+	        int res = 0;
+	
+	        left[0] = -1;
+	        for(int i = 1; i < n; i++){
+	            int x = i-1;
+	            //向左遍历
+	            while(x >= 0 && heights[x] >= heights[i]){
+	                x = left[x];
+	            }
+	            left[i] = x;
+	        }
+	
+	        right[n-1] = n;
+	        for(int i = n-2; i >= 0; i--){
+	            int x = i+1;
+	            //向右遍历
+	            while(x < n && heights[x] >= heights[i]){
+	                x = right[x];
+	            }
+	            right[i] = x;
+	        }
+	
+	        for(int i = 0; i < n; i++){
+	            int sum = heights[i] * (right[i] - left[i] - 1);
+	            res = Math.max(res, sum);
+	        }
+	        return res;
+	    }
+	}
+	```
+
+## 动态规划
+1. 思路
+	1. 确定dp含义和下标含义
+	2. 初始化dp
+	3. 确定状态转移方程
+	4. 确定遍历方向顺序
+2. 背包递推公式
+	1. 能否能装满背包（最多能装多少）：dp[i] = Math.max(dp[i], dp[i-nums[j]]+nums[j]);
+	2. 装满背包有几种方法：dp[i] += dp[i-nums[j]];
+	3. 背包装满最大价值：dp[i] = Math.max(dp[i], dp[i-weight[j]]+value[j]);
+	4. 装满背包所有物品的最小个数：dp[i] = Math.min(dp[i-nums[j]]+1, dp[i]);
+3. 爬楼梯（m阶的爬法）
+	```java
+	int[] dp = new int[n+1];
+	dp[0] = 0; dp[1] = 1;
+	for(int i = 2; i <= n; i++){
+		if(i <= m) dp[i] += 1;
+		for(int j = 1; j <= i && j <= m; j++){
+			dp[i] += dp[i-j];
+		}
+	}
+	return dp[n];
+	```
+	
+4. 01背包
+	```java
+	//二维dp，dp[i][j]表示最大价值，i表示物品0-i，j表示背包容量,value[]表示物品0-i的价值
+	int[][] dp = new int[m][n];
+	//初始化为0；初始化物品1
+	for(int i = weight[0]; i < n; i++){
+		dp[0][i] = value[0];
+	}
+	//遍历
+	for(int i = 1; i < m; i++){
+		for(int j = 0; j < n; j++){
+			if(j < weight[i]) dp[i][j] = dp[i-1][j];
+			else dp[i][j] = Math.max(dp[i-1][j], dp[i-1][j-weight[i]]+value[i]);
+		}
+	}
+	
+	//一维
+	int[] dp = new int[n];//初始化为0
+	for(int i = 0; i < m; i++){         
+		for(int j = n; j >= weight[i]; j--){//从后往前遍历，确保只放入一个物品
+			dp[j] = Math.max(dp[j], dp[j-weight[i]]+value[i]);
+		}
+	}
+	
+	//装满背包有几种方法
+	dp[j] += dp[j-weight[i]];
+	```
+	纯 0 - 1 背包 是求 给定背包容量 装满背包 的最⼤价值是多少。
+	416分割等和⼦集 是求 给定背包容量，能不能装满这个背包。
+	```java
+	//确定dp含义，dp为和，下标也是和
+	int[] dp = new int[target+1];
+	//确定递归公式，以及遍历顺序
+	for(int i = 0; i < n; i++){
+		for(int j = target; j >= nums[i]; j--){  //从后往前顺序
+			dp[j] = Math.max(dp[j], dp[j-nums[i]] + nums[i]);
+		}
+	}
+	return dp[target] == target ? true : false;
+	```
+	1049最后⼀块⽯头的重量 II 是求 给定背包容量，尽可能装，最多能装多少
+	```java
+	int target = sum/2;//背包容量
+		int[] dp = new int[target+1];//最大价值，最大石头和
+		for(int i = 0; i < n; i++){
+			for(int j = target; j >= stones[i]; j--){
+				dp[j] = Math.max(dp[j], dp[j-stones[i]]+ stones[i]);
+			}
+		}
+		return sum-2*dp[target];
+	```
+	494⽬标和 是求 给定背包容量，装满背包有多少种⽅法。
+	```java
+	int t = (sum-target)/2; //背包容量
+	int[] dp = new int[t+1];//方法数
+	dp[0] = 1;
+	for(int i = 0; i < n; i++){
+		for(int j = t; j >= nums[i]; j--){
+			dp[j] += dp[j-nums[i]];
+		}
+	}
+	return dp[t];
+	```
+	474一和零 是求 给定背包容量，装满背包最多有多少个物品。
+	```java
+	//01背包问题，两个背包
+	int[][] dp = new int[m+1][n+1];//最大子集的长度，即背包的最大价值
+	dp[0][0] = 0;
+	//遍历物品
+	for(String str : strs){
+		int zero = 0, one = 0;//物品的重量
+		for(char c : str.toCharArray()){
+			if(c == '1') one++;
+			if(c == '0') zero++;
+		}
+		//遍历背包
+		for(int j = m; j>= zero; j--){
+			for(int k = n; k >= one; k--){
+				dp[j][k] = Math.max(dp[j][k], dp[j-zero][k-one]+1);
+			}
+		}
+	}
+	return dp[m][n];
+	```
+	
+5. 完全背包
+	1. 装满背包有几种方法：
+		1. 求组合数：外层for遍历物品内层for遍历背包
+		```java
+		int[] dp = new int[amount+1];
+		dp[0] = 1;
+		for(int i = 0; i < coins.length; i++){       //物品
+			for(int j = coins[i]; j <= amount; j++){ //背包
+				dp[j] += dp[j-coins[i]];
+			}
+		}
+		return dp[amount];
+		```
+		2. 求排列数：外层for遍历背包内层for遍历物品
+		```java
+		int[] dp = new int[target+1];
+		dp[0] = 1; //因为递推公式dp[i] += dp[i - nums[j]]的缘故，dp[0]要初始化为1，这样递归其他dp[i]的时候才会有数值基础。
+		for(int i = 1; i <= target; i++){            //背包
+			for(int j = 0; j < nums.length; j++){    //物品
+				if(nums[j] <= i) dp[i] += dp[i-nums[j]];
+			}
+		}
+		return dp[target];
+		```
+	2. 装满背包最少的物件数：要求最少硬币数量，硬币是组合数还是排列数都⽆所谓！所以两个for循环先后顺序怎样都可以！
+		```java
+		int[] dp = new int[amount+1];
+		Arrays.fill(dp, Integer.MAX_VALUE);
+		dp[0] = 0;
+		for(int i = 1; i <= amount; i++){          //背包
+			for(int j = 0; j < coins.length; j++){ //物品
+				if(coins[j] <= i && dp[i-coins[j]]!=Integer.MAX_VALUE) dp[i] = Math.min(dp[i-coins[j]]+1, dp[i]);
+			}
+		}
+		return dp[amount]!=Integer.MAX_VALUE ? dp[amount] : -1;
+		
+		for(int i = 0; i < coins.length; i++){          //物品
+			for(int j = coin[i]; j <= amount; j++){ //背包
+				if(dp[i-coins[j]]!=Integer.MAX_VALUE){
+					dp[i] = Math.min(dp[i-coins[j]]+1, dp[i]);
+				} 
+			}
+		}
+		```
+	1. 背包如何装满
+6. 多重背包：O(m × n × k)，m：物品种类个数，n背包容量，k单类物品数量
+	```java
+	for(int i = 0; i < weight.size(); i++) { // 遍历物品
+	       for(int j = bagWeight; j >= weight[i]; j--) { // 遍历背包容量
+	           // 以上为01背包，然后加⼀个遍历个数
+	           for (int k = 1; k <= nums[i] && (j - k * weight[i]) >= 0; k++) { // 遍历个数
+	               dp[j] = max(dp[j], dp[j - k * weight[i]] + k * value[i]);       }}}
+	```
+7. 打家劫舍
+	1. 常规
+	2. 连成环：考虑两种情况（包头不包尾，包尾不包头）
+		```java
+		public int rob(int[] nums) {
+		        int n = nums.length;
+		        if(n == 1) return nums[0];
+		        int res1 = money(nums, 0, n-2);
+		        int res2 = money(nums, 1, n-1);
+		        return Math.max(res1, res2);
+		    }
+		
+		    private int money(int[] nums, int start, int end){
+		        if(start == end) return nums[start];
+		        int[] dp = new int[nums.length];
+		        dp[start] = nums[start];
+		        dp[start+1] = Math.max(nums[start], nums[start+1]);
+		        for(int i = start+2; i <= end; i++){
+		            dp[i] = Math.max(dp[i-1], dp[i-2]+nums[i]);
+		        }
+		        return dp[end];
+		    }
+		```
+	1. 连成树（树形dp入门）
+```java
+public int rob(TreeNode root) {
+	//递归，后序遍历，因为要根据返回值计算
+	int[] ans = robTree(root);
+	return Math.max(ans[0], ans[1]);
+}
+private int[] robTree(TreeNode cur){
+	int[] res = new int[2];         //确定dp含义，0代表不偷，1代表偷，dp代表最高金额
+	if(cur == null) return res;        //初始化dp，确定递归终点
+	int[] left = robTree(cur.left);    //左
+	int[] right = robTree(cur.right);  //右
+	//不偷
+	res[0] = left[1] + right[1];
+	//偷
+	res[1] = left[0] + right[0] + cur.val;
+	return res;
+}
+```
+8. 买卖股票时机
+	1. 只有一次买卖
+		```java
+		int[][] dp = new int[n][2];
+        //0表示持有（包括买入和继续持有），1表示不持有（包括卖出和空仓）
+        dp[0][0] = -prices[0];
+        dp[0][1] = 0;
+        for(int i = 1; i < n; i++){
+            dp[i][0] = Math.max(-prices[i], dp[i-1][0]);          //买入或者持有
+            dp[i][1] = Math.max(dp[i-1][0]+prices[i], dp[i-1][1]);//卖出或不持有
+        }
+        return dp[n-1][1];
+		```
+	2. 一次只能持有一只股票，可以多次买卖
+		```java
+		int n = prices.length;
+        int[][] dp = new int[n][2];
+        dp[0][0] = -prices[0];  //持有股票时候的最大利润
+        dp[0][1] = 0;           //不持有股票时的最大利润
+        for(int i = 1; i < n; i++){
+            dp[i][0] = Math.max(dp[i-1][1]-prices[i], dp[i-1][0]);//买入或者保持
+            dp[i][1] = Math.max(dp[i-1][0]+prices[i], dp[i-1][1]);//卖出或者保持
+        }
+        return dp[n-1][1];
+		```
+	3. 一次只能持有一只股票，最多买卖k次
+		```java
+		//奇数买入，偶数卖出
+        int[][] dp = new int[n][2*k+1];
+        for(int i = 1 ; i < 2*k; i += 2){
+            dp[0][i] = -prices[0];
+        }
+        for(int i = 1; i < n; i++){
+            for(int j = 0; j < 2*k-1; j +=2){
+                dp[i][j+1] = Math.max(dp[i-1][j]-prices[i], dp[i-1][j+1]);
+                dp[i][j+2] = Math.max(dp[i-1][j+1]+prices[i], dp[i-1][j+2]);
+            }
+        }
+        return dp[n-1][2*k];
+		```
+	4. 含一天冷冻期，卖出后需要经过冷冻期才能买入
+		```java
+		//0:买入，1：保持卖出，2：卖出，3：冷冻
+        int[][] dp = new int[n+1][4];
+        dp[1][0] = -prices[0];  
+        for(int i = 2; i <= n; i++){
+            dp[i][0] = Math.max(dp[i-1][0],Math.max(dp[i-1][3] - prices[i-1], dp[i-1][1]-prices[i-1]));
+            dp[i][1] = Math.max(dp[i-1][2], dp[i-1][1]);
+            dp[i][2] = dp[i-1][0]+prices[i-1];
+            dp[i][3] = dp[i-1][2];
+        }
+        return Math.max(dp[n][1],dp[n][2]);
+		```
+9. 子序列
+	1. 最长公共子序列（不要求连续）
+		```java
+		char[] t1 = text1.toCharArray();
+        char[] t2 = text2.toCharArray();
+        int n = t1.length, m = t2.length;
+        int[][] dp = new int[n+1][m+1];
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= m; j++){
+                if(t1[i-1] == t2[j-1]){
+                    dp[i][j] = dp[i-1][j-1]+1;
+                }else{
+                    dp[i][j] = Math.max(dp[i][j-1],dp[i-1][j]);
+                }
+            }
+        }
+        return dp[n][m];
+		```
+	2. 最长重复子数组（要求连续）
+		```java
+		int n = nums1.length, m = nums2.length;
+        int[][] dp = new int[n+1][m+1];
+        int res = 0;
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= m; j++){
+                if(nums1[i-1] == nums2[j-1]){
+                    dp[i][j] = dp[i-1][j-1] + 1;
+                }
+                res = Math.max(res, dp[i][j]);
+            }
+        }
+        return res;
+```
+## 数论
+
+1. 计算Cmn，即从m中任取n。注意防止int溢出，使用longlong，边乘边除
+	```java
+	int fenmu = m-1; long long fenzi = 1;
+	while(n--){
+		fenzi *= (n--);
+		while(fenmu != 0 && fenzi % fenmu == 0){
+			fenzi /= fenmu;
+			fenmu--;
+		}
+	}
+	return fenzi;
+	```
+
 - ### 哈希表
 	- 什么是哈希表：想象成一本字典
 		-  **键 (Key)**： 相当于字典里的“字”或者“词”。
@@ -58,9 +733,10 @@
 		- **初始化**：Map< Integer, Integer> hashTable = new HashMap<>(n);  n为容量（即cnt的可能最大值）。
 		- **hashTable.put(key.value)**
 		- **查找值**：通过key查找value：value = hashTable.get(key)
-		- cnt.getOrDefault( j - k, 0 ); 查找 j - k 是否在 cnt 中存在，如果存在则返回其出现次数，否则返回 `0`。
-		- cnt.merge ( j, 1, Integer : :sum);  更新 j 在 cnt 中出现的次数，如果不存在初始化为1，存在加1。
-		- ht.containsKey( target - nums[i])
+		- **cnt.getOrDefault( j - k, 0 )**; 查找 j - k 是否在 cnt 中存在，如果存在则返回其出现次数，否则返回 `0`。
+		- **cnt.merge ( j, 1, Integer : :sum)**;  更新 j 在 cnt 中出现的次数，如果不存在初始化为1，存在加1。
+		- **ht.containsKey( target - nums[i])**
+		- **for(Map.Entry<Integer, Integer> c : cnt.entrySet())**{ itn key = c.getKey(); int value = c.getValue();} ：遍历哈希表，同时访问键和值
 	- 将vector< int>& nums转换为哈希集合：unordered_set< int> hashSet( nums.begin(), nums.end());
 - ### 动态规划
 	- ####  **记忆化DFS**
@@ -661,15 +1337,15 @@ class MyLinkedList {
 	            return result;
 	        }
 	        Stack<TreeNode> stack = new Stack<>();
-	        TreeNode cur = root;
+	        TreeNode cur = root; //使用指针来访问节点
 	        while (cur != null || !stack.isEmpty()){
 	           if (cur != null){
-	               stack.push(cur);
-	               cur = cur.left;
+	               stack.push(cur);//一直访问到最底层，优先左子树
+	               cur = cur.left;//左
 	           }else{
 	               cur = stack.pop();
-	               result.add(cur.val);
-	               cur = cur.right;
+	               result.add(cur.val);//中
+	               cur = cur.right;//右
 	           }
 	        }
 	        return result;
@@ -677,6 +1353,7 @@ class MyLinkedList {
 	}
 	
 	// 后序遍历顺序 左-右-中 入栈顺序：中-左-右 出栈顺序：中-右-左， 最后翻转结果
+	//对前序遍历的代码稍作修改，前序：中左右，入栈顺序改为中右左，最后反转就是左右中
 	class Solution {
 	    public List<Integer> postorderTraversal(TreeNode root) {
 	        List<Integer> result = new ArrayList<>();
@@ -687,19 +1364,46 @@ class MyLinkedList {
 	        stack.push(root);
 	        while (!stack.isEmpty()){
 	            TreeNode node = stack.pop();
-	            result.add(node.val);
+	            result.add(node.val);//中
 	            if (node.left != null){
-	                stack.push(node.left);
+	                stack.push(node.left);//左
 	            }
 	            if (node.right != null){
-	                stack.push(node.right);
+	                stack.push(node.right);//右
 	            }
 	        }
-	        Collections.reverse(result);
+	        Collections.reverse(result);//反转
 	        return result;
 	    }
 	}
 	```
+
+
+```java
+class Solution {
+	public List<Integer> preorderTraversal(TreeNode root) {
+		//迭代同一写法，使用栈,前序遍历,中左右,入栈顺序是右左中
+		if(root == null) return null;
+		Stack<TreeNode> s = new Stack<>();
+		List<Integer> res = new ArrayList<>();
+		s.push(root);
+		while(!s.isEmpty()){
+			TreeNode cur = s.peek();
+			if(cur != null){ //如果不是null就继续遍历节点
+				s.pop();
+				if(cur.right != null) s.push(cur.right); //右
+				if(cur.left != null) s.push(cur.left);   //左
+				s.push(cur);                             //中
+				s.push(null);//使用null指针标记
+			}else{ //遇到null就可以处理节点
+				s.pop();
+				cur = s.pop();
+				res.add(cur.val);
+			}
+		}
+	}
+}
+```
 
 - 统一迭代法
 	```java
@@ -731,6 +1435,30 @@ class MyLinkedList {
 	    }
 	}
 	```
+
+- 层序遍历
+```
+public void levelOrder(TreeNode node){
+	int height = 0; //树深度
+	List<List<Integer>> res = new ArrayList<List<Integer>>();
+	if(node == null) return null;
+	//使用队列，先进先出，逐层遍历
+	Deque<TreeNode> que = new LinkedList<>();
+	que.offer(node);
+	while(!que.isEmpty()){
+		int size = que.size();
+		List<Integer> path = new ArrayList<>();
+		for(int i = 0; i < size; i++){
+			TreeNode cur = que.poll();
+			path.add(cur.val);
+			if(cur.left != null) que.offer(cur.left);
+			if(cur.right != null) que.offer(cur.right);
+		}
+		height++;
+		res.add(new ArrayList<>(path));
+	}
+}
+```
 
 - 层级遍历（BFS迭代-队列）
 	- 1. **`len = que.size()` 的作用**
@@ -832,6 +1560,37 @@ class MyLinkedList {
 | 子集问题  | `O(n × 2^n)`     | `O(n × 2^n)`     |
 | 分割回文串 | `O(n × 2^n)`     | `O(n × 2^n)`     |
 
+程序运行的时候对unordered_set 频繁的insert，unordered_set需要做哈希映射（也就是把key通过hash function映射为唯一的哈希值）相对费时间，而且每次重新定义set，insert的时候其底层的符号表也要做相应的扩充，也是费事的。
+
+子集问题分析：
+
+- 时间复杂度：O(2^n)，因为每一个元素的状态无外乎取与不取，所以时间复杂度为O(2^n)
+- 空间复杂度：O(n)，递归深度为n，所以系统栈所用空间为O(n)，每一层递归所用的空间都是常数级别，注意代码里的result和path都是全局变量，就算是放在参数里，传的也是引用，并不会新申请内存空间，最终空间复杂度为O(n)
+
+排列问题分析：
+
+- 时间复杂度：O(n!)，这个可以从排列的树形图中很明显发现，每一层节点为n，第二层每一个分支都延伸了n-1个分支，再往下又是n-2个分支，所以一直到叶子节点一共就是 n * n-1 * n-2 * ..... 1 = n!。
+- 空间复杂度：O(n)，和子集问题同理。
+
+组合问题分析：
+
+- 时间复杂度：O(2^n)，组合问题其实就是一种子集的问题，所以组合问题最坏的情况，也不会超过子集问题的时间复杂度。
+- 空间复杂度：O(n)，和子集问题同理。
+
+N皇后问题分析：
+
+- 时间复杂度：O(n!) ，其实如果看树形图的话，直觉上是O(n^n)，但皇后之间不能见面所以在搜索的过程中是有剪枝的，最差也就是O（n!），n!表示n * (n-1) * .... * 1。
+- 空间复杂度：O(n)，和子集问题同理。
+
+解数独问题分析：
+
+- 时间复杂度：O(9^m) , m是'.'的数目。
+- 空间复杂度：O(n^2)，递归的深度是n^2
+
+#### 总结
+![image.png](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/20250815212945025.png)
+
+
 ### 思路
 
 1. 前缀后缀
@@ -844,17 +1603,49 @@ class MyLinkedList {
 8. 如果需要搜索整棵二叉树且不用处理递归返回值，递归函数就**不要返回值**。（这种情况就是本文下半部分介绍的113.路径总和ii）
 9. 如果需要搜索整棵二叉树且需要处理递归返回值，递归函数就**需要返回值**。 （这种情况我们在[236. 二叉树的最近公共祖先 (opens new window)](https://programmercarl.com/0236.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html)中介绍）
 10. 如果要搜索其中一条符合条件的路径，那么递归一定需要返回值，因为遇到符合条件的路径了就要及时返回。
-11. 回溯法，一般可以解决如下几种问题：
+
+|**判断条件**|**需要返回值**|**不需要返回值**|
+|---|---|---|
+|**是否依赖子问题的结果**|是（如累加、判断存在性）|否（如遍历、记录所有解）|
+|**是否需要传递结果到顶层**|是|否（结果通过参数或全局变量存储）|
+|**典型问题**|数值计算、搜索终止条件|全排列、回溯尝试所有可能性|
+
+12. 回溯法，一般可以解决如下几种问题：
 	
 	- 组合问题：N个数里面按一定规则找出k个数的集合
 	- 切割问题：一个字符串按一定规则有几种切割方式
 	- 子集问题：一个N个数的集合里有多少符合条件的子集
 	- 排列问题：N个数按一定规则全排列，有几种排列方式
 	- 棋盘问题：N皇后，解数独等等
-12. 如果是一个集合来求组合的话，就需要startIndex，
+13. 如果是一个集合来求组合的话，就需要startIndex，
 	如果是多个集合取组合，各个集合之间相互不影响，那么就不用startIndex，
 
+### 复杂度分析
 
+子集问题分析：
+
+- 时间复杂度：O(2^n)，因为每一个元素的状态无外乎取与不取，所以时间复杂度为O(2^n)
+- 空间复杂度：O(n)，递归深度为n，所以系统栈所用空间为O(n)，每一层递归所用的空间都是常数级别，注意代码里的result和path都是全局变量，就算是放在参数里，传的也是引用，并不会新申请内存空间，最终空间复杂度为O(n)
+
+排列问题分析：
+
+- 时间复杂度：O(n!)，这个可以从排列的树形图中很明显发现，每一层节点为n，第二层每一个分支都延伸了n-1个分支，再往下又是n-2个分支，所以一直到叶子节点一共就是 n * n-1 * n-2 * ..... 1 = n!。
+- 空间复杂度：O(n)，和子集问题同理。
+
+组合问题分析：
+
+- 时间复杂度：O(2^n)，组合问题其实就是一种子集的问题，所以组合问题最坏的情况，也不会超过子集问题的时间复杂度。
+- 空间复杂度：O(n)，和子集问题同理。
+
+N皇后问题分析：
+
+- 时间复杂度：O(n!) ，其实如果看树形图的话，直觉上是O(n^n)，但皇后之间不能见面所以在搜索的过程中是有剪枝的，最差也就是O（n!），n!表示n * (n-1) * .... * 1。
+- 空间复杂度：O(n)，和子集问题同理。
+
+解数独问题分析：
+
+- 时间复杂度：O(9^m) , m是'.'的数目。
+- 空间复杂度：O(n^2)，递归的深度是n^2
 
 ### **1. 数组 & 哈希表**
 
