@@ -240,7 +240,7 @@
 		s.push(j);
 	}
 ```
-	
+
 2. 接雨水（找左侧最高和右侧最高）
 	```java
 	class Solution {
@@ -332,7 +332,7 @@
 	}
 	```
 
-2. 连续柱子面积（找左侧第一个小的和右侧第一个小的）
+3. 连续柱子面积（找左侧第一个小的和右侧第一个小的）
 	```java
 	class Solution {
 	    public int largestRectangleArea(int[] heights) {
