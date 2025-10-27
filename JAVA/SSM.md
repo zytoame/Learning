@@ -216,6 +216,133 @@ public void runSpeed(ProceedingJoinPoint pjp) throws Throwable {
 2. 返回值![Pasted image 20250712171446](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712171446.png)
 #### 案例：密码空格处理 
 ![Pasted image 20250712172916](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712172916.png)
+### AOP 切面编程的原理
+
+AOP（Aspect-Oriented Programming）是一种编程范式，旨在将横切关注点（如日志、事务、安全等）与核心业务逻辑分离，提高代码的模块化程度。
+
+#### 核心原理：动态代理
+
+AOP 的底层实现技术主要是**动态代理**。Spring AOP 等框架在运行时动态地创建一个代理对象，这个代理对象在目标方法执行的前后，织入（Weave）切面逻辑。
+
+**工作流程**：
+1.  **定义切面 (Aspect)**：开发者编写一个类，里面包含**通知 (Advice)**（如 `@Before`, `@After` 等）和**切点 (Pointcut)**（定义在哪些方法的哪些位置织入代码）。
+2.  **创建代理对象**：Spring 容器启动时，或当需要被增强的 Bean 被获取时，框架会检查这个 Bean 是否符合切面规则。
+3.  **织入逻辑**：如果符合，框架会通过动态代理技术，**为目标对象创建一个代理对象**。这个代理对象不是原目标对象本身，而是它的一个“包装”。
+4.  **方法调用拦截**：当客户端调用目标方法时，实际上调用的是**代理对象的方法**。
+5.  **执行增强链**：代理对象的方法内部会创建一个**方法调用链**。这个链包含了：
+    *   **前置通知**（Before Advice）
+    *   可能有的**环绕通知**（Around Advice）的执行前半部分
+    *   **目标方法的实际执行**
+    *   可能有的**环绕通知**的执行后半部分
+    *   **后置通知**（After Advice）
+    *   **返回后通知**（After Returning Advice）或**异常通知**（After Throwing Advice）
+
+最终，通过这个代理机制，横切关注点的代码就被无缝地织入到了核心业务逻辑中。
+
+---
+
+#### 三、动态代理的实现方式及原理
+
+动态代理是 AOP 的基石，主要有两种主流的实现方式。
+
+##### 1. JDK 动态代理 (基于接口)
+
+*   **原理**：Java 标准库提供的 `java.lang.reflect.Proxy` 类在运行时动态地生成一个**实现了指定接口的代理类**的字节码。
+*   **使用条件**：**目标类必须至少实现一个接口**。
+*   **核心类**：
+    *   `java.lang.reflect.Proxy`：用于创建代理实例。
+    *   `java.lang.reflect.InvocationHandler`：调用处理器接口。开发者需要实现它的 `invoke` 方法，在这里编写代理逻辑。
+*   **流程**：
+    1.  通过 `Proxy.newProxyInstance()` 方法传入目标类的类加载器、需要代理的接口数组、以及一个 `InvocationHandler` 实例。
+    2.  JVM 在运行时动态生成一个代理类（如 `$Proxy0`），这个类实现了指定的接口。
+    3.  当调用代理对象的任何方法时，调用都会被重定向到 `InvocationHandler.invoke()` 方法。
+    4.  在 `invoke` 方法内部，你可以通过 `Method` 对象调用目标方法，并在其前后添加自定义逻辑。
+
+**简单代码示例**：
+```java
+// 1. 定义接口
+public interface UserService {
+    void save();
+}
+// 2. 实现类（目标对象）
+public class UserServiceImpl implements UserService {
+    public void save() { System.out.println("保存用户"); }
+}
+// 3. 调用处理器
+public class MyInvocationHandler implements InvocationHandler {
+    private Object target; // 目标对象
+    public MyInvocationHandler(Object target) { this.target = target; }
+    
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("前置通知");
+        Object result = method.invoke(target, args); // 反射调用目标方法
+        System.out.println("后置通知");
+        return result;
+    }
+}
+// 4. 使用
+UserService target = new UserServiceImpl();
+InvocationHandler handler = new MyInvocationHandler(target);
+// 创建代理对象
+UserService proxy = (UserService) Proxy.newProxyInstance(
+        target.getClass().getClassLoader(),
+        target.getClass().getInterfaces(), // 关键：基于接口
+        handler);
+proxy.save(); // 调用的是代理对象的方法
+```
+
+##### 2. CGLIB 动态代理 (基于继承)
+
+*   **原理**：CGLIB（Code Generation Library）是一个强大的第三方字节码生成库。它通过**继承目标类**，在运行时动态生成目标类的**子类**作为代理类。
+*   **使用条件**：目标类**不能是 final 的**，目标方法也不能是 final 的（因为 final 方法不能被重写）。
+*   **核心类**：
+    *   `net.sf.cglib.proxy.Enhancer`：类似于 JDK 的 `Proxy`，用于创建代理实例。
+    *   `net.sf.cglib.proxy.MethodInterceptor`：类似于 `InvocationHandler`，需要实现 `intercept` 方法。
+*   **流程**：
+    1.  通过 `Enhancer` 对象设置目标类作为父类，并设置一个 `MethodInterceptor` 回调。
+    2.  CGLIB 库在运行时动态生成一个目标类的子类（如 `TargetClass$$EnhancerByCGLIB$$...`）。
+    3.  这个子类会重写父类（目标类）的所有非 final 方法。
+    4.  当调用代理对象的方法时，调用会被重定向到 `MethodInterceptor.intercept()` 方法。
+    5.  在 `intercept` 方法内部，你可以通过 `MethodProxy` 对象调用目标方法（即父类方法），并在其前后添加自定义逻辑。
+
+**简单代码示例**：
+```java
+// 目标类，无需实现接口
+public class UserService {
+    public void save() { System.out.println("保存用户"); }
+}
+// 方法拦截器
+public class MyMethodInterceptor implements MethodInterceptor {
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+        System.out.println("CGLIB 前置通知");
+        // 调用目标类（父类）的方法
+        Object result = proxy.invokeSuper(obj, args);
+        System.out.println("CGLIB 后置通知");
+        return result;
+    }
+}
+// 使用
+Enhancer enhancer = new Enhancer();
+enhancer.setSuperclass(UserService.class); // 关键：设置父类
+enhancer.setCallback(new MyMethodInterceptor());
+UserService proxy = (UserService) enhancer.create(); // 创建代理对象
+proxy.save();
+```
+
+#### 总结对比
+
+| 特性 | JDK 动态代理 | CGLIB 动态代理 |
+| :--- | :--- | :--- |
+| **原理** | 基于**接口**实现 | 基于**继承**子类化 |
+| **依赖** | Java 标准库，无需额外依赖 | 需要引入 CGLIB 库 |
+| **限制** | 目标类必须实现接口 | 目标类和目标方法不能是 final 的 |
+| **性能** | 生成代理较快，调用稍慢（反射） | 生成代理较慢（需生成字节码），调用较快（直接调用） |
+| **应用** | Spring AOP **默认**使用 JDK 代理（如果目标有接口） | Spring AOP 在目标无接口时自动使用 CGLIB |
+
+**Spring AOP 的默认策略**：如果目标对象实现了接口，则使用 JDK 动态代理；如果没有实现接口，则使用 CGLIB 动态代理。你也可以强制 Spring AOP 始终使用 CGLIB。
+
+
+ 
 ### 事务：开到业务层上 
 案例：银行账户转账：a账户减钱，b账户加钱
 ![Pasted image 20250712180604](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712180604.png)![Pasted image 20250712180612](https://kmk1132-obs-1370539359.cos.ap-guangzhou.myqcloud.com/Pasted%20image%2020250712180612.png)

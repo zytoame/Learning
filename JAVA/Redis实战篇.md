@@ -99,11 +99,9 @@
 
 **具体代码如下**
 
-**贴心小提示：**
-
 具体逻辑上文已经分析，我们仅仅只需要按照提示的逻辑写出代码即可。
 
-* 发送验证码
+* ==发送验证码==
 
 ```java
     @Override
@@ -125,7 +123,9 @@
     }
 ```
 
-* 登录
+^d36771
+
+* ==登录==
 
 ```java
     @Override
@@ -151,7 +151,7 @@
             //不存在，则创建
             user =  createUserWithPhone(phone);
         }
-        //7.保存用户信息到session中
+        //7.保存用户信息到session中，如果要隐藏用户敏感信息的话之后需要修改
         session.setAttribute("user",user);
 
         return Result.ok();
@@ -161,24 +161,29 @@
 ### 1.4、实现登录拦截功能
 
 **温馨小贴士：tomcat的运行原理**
-
 ![1653068196656](.\Redis实战篇.assets\1653068196656.png)
 
-当用户发起请求时，会访问我们像tomcat注册的端口，任何程序想要运行，都需要有一个线程对当前端口号进行监听，tomcat也不例外，当监听线程知道用户想要和tomcat连接连接时，那会由监听线程创建socket连接，socket都是成对出现的，用户通过socket像互相传递数据，当tomcat端的socket接受到数据后，此时监听线程会从tomcat的线程池中取出一个线程执行用户请求，在我们的服务部署到tomcat后，线程会找到用户想要访问的工程，然后用这个线程转发到工程中的controller，service，dao中，并且访问对应的DB，在用户执行完请求后，再统一返回，再找到tomcat端的socket，再将数据写回到用户端的socket，完成请求和响应
+1. 当**用户发起请求**时，会**访问**我们像**tomcat注册的端口**，任何程序想要运行，都需要有一个**线程对当前端口号进行监听**，tomcat也不例外，
+2. 当监听线程知道用户想要和tomcat连接时，那会**由监听线程创建socket连接**，socket都是成对出现的，
+3. 用户通过socket互相传递数据，
+4. 当tomcat端的socket接受到数据后，
+5. 此时**监听线程会从tomcat的线程池中取出一个线程执行用户请求**，
+6. 在我们的服务部署到tomcat后，线程会找到用户想要访问的工程，
+7. 然后**用这个线程转发到工程中的controller，service，dao中**，并且访问对应的DB，
+8. 在用户执行完请求后，再统一返回，
+9. 再**找到tomcat端的socket，**
+10. **再将数据写回到用户端的socket，完成请求和响应**
 
-通过以上讲解，我们可以得知 每个用户其实对应都是去找tomcat线程池中的一个线程来完成工作的， 使用完成后再进行回收，既然每个请求都是独立的，所以在每个用户去访问我们的工程时，我们可以使用threadlocal来做到线程隔离，每个线程操作自己的一份数据
+通过以上讲解，我们可以得知 **每个用户其实对应都是去找tomcat线程池中的一个线程来完成工作的， 使用完成后再进行回收**，既然**每个请求都是独立**的，所以**在每个用户去访问我们的工程时，我们可以使用threadlocal来做到线程隔离，每个线程操作自己的一份数据**
 
 
 
 **温馨小贴士：关于threadlocal**
-
-如果小伙伴们看过threadLocal的源码，你会发现在threadLocal中，无论是他的put方法和他的get方法， 都是先从获得当前用户的线程，然后从线程中取出线程的成员变量map，只要线程不一样，map就不一样，所以可以通过这种方式来做到线程隔离
-
-
+如果小伙伴们看过threadLocal的源码，你会发现**在threadLocal中**，无论是他的**put方法**和他的**get方法**， **都是先从获得当前用户的线程，然后从线程中取出线程的成员变量map，只要线程不一样，map就不一样，所以可以通过这种方式来做到线程隔离**
 
 ![1653068874258](.\Redis实战篇.assets\1653068874258.png)
 
-拦截器代码
+==拦截器代码==
 
 ```Java
 public class LoginInterceptor implements HandlerInterceptor {
@@ -195,7 +200,8 @@ public class LoginInterceptor implements HandlerInterceptor {
               response.setStatus(401);
               return false;
         }
-        //5.存在，保存用户信息到Threadlocal
+        //5.存在，保存用户信息到Threadlocal，
+        //修改：用户敏感信息，UserHolder.saveUser((UserDTO) user);
         UserHolder.saveUser((User)user);
         //6.放行
         return true;
@@ -233,7 +239,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
 ### 1.5、隐藏用户敏感信息
 
-我们通过浏览器观察到此时用户的全部信息都在，这样极为不靠谱，所以我们应当在返回用户信息之前，将用户的敏感信息进行隐藏，采用的核心思路就是书写一个UserDto对象，这个UserDto对象就没有敏感信息了，我们在返回前，将有用户敏感信息的User对象转化成没有敏感信息的UserDto对象，那么就能够避免这个尴尬的问题了
+我们通过浏览器观察到此时用户的全部信息都在，这样极为不靠谱，所以我们应当在返回用户信息之前，**将用户的敏感信息进行隐藏，采用的核心思路就是书写一个UserDto对象**，这个UserDto对象就没有敏感信息了，我们在返回前，将有用户敏感信息的User对象转化成没有敏感信息的UserDto对象，那么就能够避免这个尴尬的问题了
 
 **在登录方法处修改**
 
@@ -273,25 +279,25 @@ public class UserHolder {
 
 **核心思路分析：**
 
-每个tomcat中都有一份属于自己的session,假设用户第一次访问第一台tomcat，并且把自己的信息存放到第一台服务器的session中，但是第二次这个用户访问到了第二台tomcat，那么在第二台服务器上，肯定没有第一台服务器存放的session，所以此时 整个登录拦截功能就会出现问题，我们能如何解决这个问题呢？早期的方案是session拷贝，就是说虽然每个tomcat上都有不同的session，但是每当任意一台服务器的session修改时，都会同步给其他的Tomcat服务器的session，这样的话，就可以实现session的共享了
+每个tomcat中都有一份属于自己的session,假设用户第一次访问第一台tomcat，并且把自己的信息存放到第一台服务器的session中，但是第二次这个用户访问到了第二台tomcat，那么在第二台服务器上，肯定没有第一台服务器存放的session，所以此时 整个登录拦截功能就会出现问题，我们能如何解决这个问题呢？早期的方案是session拷贝，就是说虽然每个tomcat上都有不同的session，但是**每当任意一台服务器的session修改时，都会同步给其他的Tomcat服务器的session，这样的话，就可以实现session的共享了**
 
-但是这种方案具有两个大问题
+**但是这种方案具有两个大问题**
 
 1、每台服务器中都有完整的一份session数据，服务器压力过大。
 
 2、session拷贝数据时，可能会出现延迟
 
-所以咱们后来采用的方案都是基于redis来完成，我们把session换成redis，redis数据本身就是共享的，就可以避免session共享的问题了
+所以咱们后来采用的方案都是基于redis来完成，我们**把session换成redis，redis数据本身就是共享的，就可以避免session共享的问题**了
 
-![1653069893050](.\Redis实战篇.assets\1653069893050.png)
+![1653069893050](..\Redis实战篇.assets\1653069893050.png)
 
 ### 1.7 Redis代替session的业务流程
 
 #### 1.7.1、设计key的结构
 
-首先我们要思考一下利用redis来存储数据，那么到底使用哪种结构呢？由于存入的数据比较简单，我们可以考虑使用String，或者是使用哈希，如下图，如果使用String，同学们注意他的value，用多占用一点空间，如果使用哈希，则他的value中只会存储他数据本身，如果不是特别在意内存，其实使用String就可以啦。
+首先我们要思考一下利用redis来存储数据，那么到底使用哪种结构呢？**由于存入的数据比较简单，我们可以考虑使用String，或者是使用哈希**，如下图，如果使用String，同学们注意他的value，用多占用一点空间，如果使用哈希，则他的value中只会存储他数据本身，如果不是特别在意内存，其实使用String就可以啦。
 
-![1653319261433](.\Redis实战篇.assets\1653319261433.png)
+![1653319261433](Redis实战篇.assets\1653319261433.png)
 
 #### 1.7.2、设计key的具体细节
 
@@ -307,10 +313,9 @@ public class UserHolder {
 
 #### 1.7.3、整体访问流程
 
-当注册完成后，用户去登录会去校验用户提交的手机号和验证码，是否一致，如果一致，则根据手机号查询用户信息，不存在则新建，最后将用户数据保存到redis，并且生成token作为redis的key，当我们校验用户是否登录时，会去携带着token进行访问，从redis中取出token对应的value，判断是否存在这个数据，如果没有则拦截，如果存在则将其保存到threadLocal中，并且放行。
+当注册完成后，用户去登录会去校验用户提交的手机号和验证码，是否一致，如果一致，则根据手机号查询用户信息，不存在则新建，最后**将用户数据保存到redis**，并且**生成token作为redis的key**，当我们校验用户是否登录时，会去携带着token进行访问，从redis中取出token对应的value，判断是否存在这个数据，如果没有则拦截，如果存在则将其保存到threadLocal中，并且放行。 
 
 ![1653319474181](.\Redis实战篇.assets\1653319474181.png)
-
 
 
 ### 1.8 基于Redis实现短信登录
@@ -461,7 +466,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
 这在实际开发中对企业讲,对产品口碑,用户评价都是致命的;所以企业非常重视缓存技术;
 
-**缓存(**Cache),就是数据交换的**缓冲区**,俗称的缓存就是**缓冲区内的数据**,一般从数据库中获取,存储于本地代码(例如:
+**缓存**(Cache),就是数据交换的**缓冲区**,俗称的缓存就是**缓冲区内的数据**,一般从数据库中获取,存储于本地代码(例如:
 
 ```java
 例1:Static final ConcurrentHashMap<K,V> map = new ConcurrentHashMap<>(); 本地用于高并发
@@ -491,19 +496,13 @@ public class LoginInterceptor implements HandlerInterceptor {
 
 **浏览器缓存**：主要是存在于浏览器端的缓存
 
-**应用层缓存：**可以分为tomcat本地缓存，比如之前提到的map，或者是使用redis作为缓存
+**应用层缓存：** 可以分为tomcat本地缓存，比如之前提到的map，或者是使用redis作为缓存
 
-**数据库缓存：**在数据库中有一片空间是 buffer pool，增改查数据都会先加载到mysql的缓存中
+**数据库缓存：** 在数据库中有一片空间是 buffer pool，增改查数据都会先加载到mysql的缓存中
 
-**CPU缓存：**当代计算机最大的问题是 cpu性能提升了，但内存读写速度没有跟上，所以为了适应当下的情况，增加了cpu的L1，L2，L3级的缓存
+**CPU缓存：** 当代计算机最大的问题是 cpu性能提升了，但内存读写速度没有跟上，所以为了适应当下的情况，增加了cpu的L1，L2，L3级的缓存
 
 ![](.\Redis实战篇.assets\image-20220523212915666.png)
-
-
-
-
-
-
 
 ### 2.2 添加商户缓存
 
@@ -535,23 +534,21 @@ public Result queryShopById(@PathVariable("id") Long id) {
 
 缓存更新是redis为了节约内存而设计出来的一个东西，主要是因为内存数据宝贵，当我们向redis插入太多数据，此时就可能会导致缓存中的数据过多，所以redis会对部分数据进行更新，或者把他叫为淘汰更合适。
 
-**内存淘汰：**redis自动进行，当redis内存达到咱们设定的max-memery的时候，会自动触发淘汰机制，淘汰掉一些不重要的数据(可以自己设置策略方式)
+**内存淘汰：** redis自动进行，当redis内存达到咱们设定的max-memery的时候，会自动触发淘汰机制，淘汰掉一些不重要的数据(可以自己设置策略方式)
 
-**超时剔除：**当我们给redis设置了过期时间ttl之后，redis会将超时的数据进行删除，方便咱们继续使用缓存
+**超时剔除：** 当我们给redis设置了过期时间ttl之后，redis会将超时的数据进行删除，方便咱们继续使用缓存
 
-**主动更新：**我们可以手动调用方法把缓存删掉，通常用于解决缓存和数据库不一致问题
+**主动更新：** 我们可以手动调用方法把缓存删掉，通常用于解决缓存和数据库不一致问题
 
 ![1653322506393](.\Redis实战篇.assets\1653322506393.png)
 
 #### 2.3.1 、数据库缓存不一致解决方案：
 
-
-
 由于我们的**缓存的数据源来自于数据库**,而数据库的**数据是会发生变化的**,因此,如果当数据库中**数据发生变化,而缓存却没有同步**,此时就会有**一致性问题存在**,其后果是:
 
 用户使用缓存中的过时数据,就会产生类似多线程数据安全问题,从而影响业务,产品口碑等;怎么解决呢？有如下几种方案
 
-Cache Aside Pattern 人工编码方式：缓存调用者在更新完数据库后再去更新缓存，也称之为双写方案
+**Cache Aside Pattern 人工编码方式**：缓存调用者在**更新完数据库后再去更新缓存**，也称之为**双写方案**
 
 Read/Write Through Pattern : 由系统本身完成，数据库与缓存的问题交由系统本身去处理
 
@@ -565,17 +562,15 @@ Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步
 
 操作缓存和数据库时有三个问题需要考虑：
 
-
-
 如果采用第一个方案，那么假设我们每次操作数据库后，都操作缓存，但是中间如果没有人查询，那么这个更新动作实际上只有最后一次生效，中间的更新动作意义并不大，我们可以把缓存删除，等待再次查询时，将缓存中的数据加载出来
 
-* 删除缓存还是更新缓存？
+* **删除缓存还是更新缓存？**
   * 更新缓存：每次更新数据库都更新缓存，无效写操作较多
-  * 删除缓存：更新数据库时让缓存失效，查询时再更新缓存
+  * **删除缓存：更新数据库时让缓存失效，查询时再更新缓存**
 
-* 如何保证缓存与数据库的操作的同时成功或失败？
+* **如何保证缓存与数据库的操作的同时成功或失败？**
   * 单体系统，将缓存与数据库操作放在一个事务
-  * 分布式系统，利用TCC等分布式事务方案
+  * **分布式系统，利用TCC等分布式事务方案**
 
 应该具体操作缓存还是操作数据库，我们应当是先操作数据库，再删除缓存，原因在于，如果你选择第一种方案，在两个线程并发来访问时，假设线程1先来，他先把缓存删了，此时线程2过来，他查询缓存数据并不存在，此时他写入缓存，当他写入缓存后，线程1再执行更新动作时，实际上写入的就是旧的数据，新的数据被旧数据覆盖了。
 
@@ -611,7 +606,7 @@ Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步
 
 ### 2.5 缓存穿透问题的解决思路
 
-缓存穿透 ：缓存穿透是指客户端请求的数据在缓存中和数据库中都不存在，这样缓存永远不会生效，这些请求都会打到数据库。
+**缓存穿透 ：缓存穿透是指客户端请求的数据在缓存中和数据库中都不存在，这样缓存永远不会生效，这些请求都会打到数据库。**
 
 常见的解决方案有两种：
 
@@ -628,15 +623,13 @@ Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步
 
 
 
-**缓存空对象思路分析：**当我们客户端访问不存在的数据时，先请求redis，但是此时redis中没有数据，此时会访问到数据库，但是数据库中也没有数据，这个数据穿透了缓存，直击数据库，我们都知道数据库能够承载的并发不如redis这么高，如果大量的请求同时过来访问这种不存在的数据，这些请求就都会访问到数据库，简单的解决方案就是哪怕这个数据在数据库中也不存在，我们也把这个数据存入到redis中去，这样，下次用户过来访问这个不存在的数据，那么在redis中也能找到这个数据就不会进入到缓存了
+**缓存空对象思路分析：** 当我们客户端访问不存在的数据时，先请求redis，但是此时redis中没有数据，此时会访问到数据库，但是数据库中也没有数据，这个数据穿透了缓存，直击数据库，我们都知道**数据库能够承载的并发不如redis这么高**，如果大量的请求同时过来访问这种不存在的数据，这些请求就都会访问到数据库，简单的解决方案就是哪怕这个数据在数据库中也不存在，我们也把这个数据存入到redis中去，这样，下次用户过来访问这个不存在的数据，那么在redis中也能找到这个数据就不会进入到缓存了
 
 
 
-**布隆过滤：**布隆过滤器其实采用的是哈希思想来解决这个问题，通过一个庞大的二进制数组，走哈希思想去判断当前这个要查询的这个数据是否存在，如果布隆过滤器判断存在，则放行，这个请求会去访问redis，哪怕此时redis中的数据过期了，但是数据库中一定存在这个数据，在数据库中查询出来这个数据后，再将其放入到redis中，
+**布隆过滤：** 布隆过滤器其实采用的是**哈希思想**来解决这个问题，通过一个庞大的**二进制数组**，走哈希思想去判断当前这个要查询的这个数据是否存在，如果布隆过滤器判断存在，则放行，这个请求会去访问redis，哪怕此时redis中的数据过期了，但是数据库中一定存在这个数据，在数据库中查询出来这个数据后，再将其放入到redis中，假设布隆过滤器判断这个数据不存在，则直接返回
 
-假设布隆过滤器判断这个数据不存在，则直接返回
-
-这种方式优点在于节约内存空间，存在误判，误判原因在于：布隆过滤器走的是哈希思想，只要哈希思想，就可能存在哈希冲突
+这种方式优点在于**节约内存空间，存在误判**，误判原因在于：布隆过滤器走的是哈希思想，只要哈希思想，就可能存在哈希冲突
 
 ![1653326156516](.\Redis实战篇.assets\1653326156516.png)
 
@@ -686,7 +679,7 @@ Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步
 
 ### 2.8 缓存击穿问题及解决思路
 
-缓存击穿问题也叫热点Key问题，就是一个被高并发访问并且缓存重建业务较复杂的key突然失效了，无数的请求访问会在瞬间给数据库带来巨大的冲击。
+缓存击穿问题也叫热点Key问题，就是一个**被高并发访问并且缓存重建业务较复杂**的key突然失效了，无数的请求访问会在瞬间给数据库带来巨大的冲击。
 
 常见的解决方案有两种：
 
@@ -713,7 +706,8 @@ Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步
 
 方案分析：我们之所以会出现这个缓存击穿问题，主要原因是在于我们对key设置了过期时间，假设我们不设置过期时间，其实就不会有缓存击穿的问题，但是不设置过期时间，这样数据不就一直占用我们内存了吗，我们可以采用逻辑过期方案。
 
-我们把过期时间设置在 redis的value中，注意：这个过期时间并不会直接作用于redis，而是我们后续通过逻辑去处理。假设线程1去查询缓存，然后从value中判断出来当前的数据已经过期了，此时线程1去获得互斥锁，那么其他线程会进行阻塞，获得了锁的线程他会开启一个 线程去进行 以前的重构数据的逻辑，直到新开的线程完成这个逻辑后，才释放锁， 而线程1直接进行返回，假设现在线程3过来访问，由于线程线程2持有着锁，所以线程3无法获得锁，线程3也直接返回数据，只有等到新开的线程2把重建数据构建完后，其他线程才能走返回正确的数据。
+我们把过期时间设置在 redis的value中，注意：这个过期时间并不会直接作用于redis，而是我们后续通过逻辑去处理。
+假设线程1去查询缓存，然后从value中判断出来当前的数据已经过期了，此时线程1去获得互斥锁，那么其他线程会进行阻塞，获得了锁的线程他会开启一个 线程去进行 以前的重构数据的逻辑，直到新开的线程完成这个逻辑后，才释放锁， 而线程1直接进行返回，假设现在线程3过来访问，由于线程2持有着锁，所以线程3无法获得锁，线程3也直接返回数据，只有等到新开的线程2把重建数据构建完后，其他线程才能走返回正确的数据。
 
 这种方案巧妙在于，异步的构建缓存，缺点在于在构建完缓存之前，返回的都是脏数据。
 
@@ -721,9 +715,9 @@ Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步
 
 进行对比
 
-**互斥锁方案：**由于保证了互斥性，所以数据一致，且实现简单，因为仅仅只需要加一把锁而已，也没其他的事情需要操心，所以没有额外的内存消耗，缺点在于有锁就有死锁问题的发生，且只能串行执行性能肯定受到影响
+**互斥锁方案：** 由于保证了互斥性，所以数据一致，且实现简单，因为仅仅只需要加一把锁而已，也没其他的事情需要操心，所以没有额外的内存消耗，**缺点在于有锁就有死锁问题的发生**，且只能串行执行性能肯定受到影响
 
-**逻辑过期方案：** 线程读取过程中不需要等待，性能好，有一个额外的线程持有锁去进行重构数据，但是在重构数据完成前，其他的线程只能返回之前的数据，且实现起来麻烦
+**逻辑过期方案：** 线程读取过程中不需要等待，性能好，**有一个额外的线程持有锁去进行重构数据**，但是在重构数据完成前，其他的线程只能返回之前的数据，且**实现起来麻烦**
 
 ![1653357522914](.\Redis实战篇.assets\1653357522914.png)
 
@@ -908,7 +902,7 @@ public class CacheClient {
 
     private final StringRedisTemplate stringRedisTemplate;
 
-    private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
+    private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10); //固定线程池
 
     public CacheClient(StringRedisTemplate stringRedisTemplate) {
         this.stringRedisTemplate = stringRedisTemplate;
@@ -917,16 +911,15 @@ public class CacheClient {
     public void set(String key, Object value, Long time, TimeUnit unit) {
         stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value), time, unit);
     }
-
+	// 设置逻辑过期
     public void setWithLogicalExpire(String key, Object value, Long time, TimeUnit unit) {
-        // 设置逻辑过期
         RedisData redisData = new RedisData();
         redisData.setData(value);
         redisData.setExpireTime(LocalDateTime.now().plusSeconds(unit.toSeconds(time)));
         // 写入Redis
         stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(redisData));
     }
-
+	// 解决缓存穿透
     public <R,ID> R queryWithPassThrough(
             String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit unit){
         String key = keyPrefix + id;
@@ -956,7 +949,7 @@ public class CacheClient {
         this.set(key, r, time, unit);
         return r;
     }
-
+	 // 逻辑过期解决缓存击穿
     public <R, ID> R queryWithLogicalExpire(
             String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit unit) {
         String key = keyPrefix + id;
@@ -1001,7 +994,7 @@ public class CacheClient {
         // 6.4.返回过期的商铺信息
         return r;
     }
-
+	// 互斥锁解决缓存击穿
     public <R, ID> R queryWithMutex(
             String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit unit) {
         String key = keyPrefix + id;
@@ -1072,7 +1065,7 @@ private CacheClient cacheClient;
     public Result queryById(Long id) {
         // 解决缓存穿透
         Shop shop = cacheClient
-                .queryWithPassThrough(CACHE_SHOP_KEY, id, Shop.class, this:: getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
+                .queryWithPassThrough(CACHE_SHOP_KEY, id, Shop.class, this: : getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
 
         // 互斥锁解决缓存击穿
         // Shop shop = cacheClient
@@ -1159,11 +1152,11 @@ public class RedisIdWorker {
 
 测试类
 
-知识小贴士：关于countdownlatch
+知识小贴士：**关于countdownlatch**
 
-countdownlatch名为信号枪：主要的作用是同步协调在多线程的等待于唤醒问题
+countdownlatch名为信号枪：主要的作用是**同步协调在多线程的等待与唤醒问题**
 
-我们如果没有CountDownLatch ，那么由于程序是异步的，当异步程序没有执行完时，主线程就已经执行完了，然后我们期望的是分线程全部走完之后，主线程再走，所以我们此时需要使用到CountDownLatch
+我们如果没有CountDownLatch ，那么由于程序是异步的，当异步程序没有执行完时，主线程就已经执行完了，然后我们期望的是**分线程全部走完之后，主线程再走，所以我们此时需要使用到CountDownLatch**
 
 CountDownLatch 中有两个最重要的方法
 
@@ -1258,7 +1251,7 @@ public void addSeckillVoucher(Voucher voucher) {
 
 秒杀下单应该思考的内容：
 
-下单时需要判断两点：
+**下单时需要判断两点：**
 
 * 秒杀是否开始或结束，如果尚未开始或已经结束则无法下单
 * 库存是否充足，不足则无法下单
@@ -1398,7 +1391,7 @@ boolean success = seckillVoucherService.update()
 
 **知识小扩展：**
 
-针对cas中的自旋压力过大，我们可以使用Longaddr这个类去解决
+**针对cas中的自旋压力过大，我们可以使用Longaddr这个类去解决**
 
 Java8 提供的一个对AtomicLong改进后的一个类，LongAdder
 
@@ -1481,9 +1474,9 @@ public Result seckillVoucher(Long voucherId) {
 }
 ```
 
-**存在问题：**现在的问题还是和之前一样，并发过来，查询数据库，都不存在订单，所以我们还是需要加锁，但是乐观锁比较适合更新数据，而现在是插入数据，所以我们需要使用悲观锁操作
+**存在问题：** 现在的问题还是和之前一样，并发过来，查询数据库，都不存在订单，所以我们还是需要加锁，但是乐观锁比较适合更新数据，而现在是插入数据，所以我们需要使用悲观锁操作
 
-**注意：**在这里提到了非常多的问题，我们需要慢慢的来思考，首先我们的初始方案是封装了一个createVoucherOrder方法，同时为了确保他线程安全，在方法上添加了一把synchronized 锁
+**注意：** 在这里提到了非常多的问题，我们需要慢慢的来思考，首先我们的初始方案是封装了一个createVoucherOrder方法，同时为了确保他线程安全，在方法上添加了一把synchronized 锁
 
 ```java
 @Transactional
@@ -1531,7 +1524,7 @@ intern() 这个方法是从常量池中拿到数据，如果我们直接使用us
 @Transactional
 public  Result createVoucherOrder(Long voucherId) {
 	Long userId = UserHolder.getUser().getId();
-	synchronized(userId.toString().intern()){
+	synchronized(userId.toString().intern()){   ////////////////////
          // 5.1.查询订单
         int count = query().eq("user_id", userId).eq("voucher_id", voucherId).count();
         // 5.2.判断是否存在
@@ -1571,7 +1564,7 @@ public  Result createVoucherOrder(Long voucherId) {
 
 在seckillVoucher 方法中，添加以下逻辑，这样就能保证事务的特性，同时也控制了锁的粒度
 
-![1653373434815](.\Redis实战篇.assets\1653373434815.png)
+![1653373434815.png](.\Redis实战篇.assets\1653373434815.png)
 
 但是以上做法依然有问题，因为你调用的方法，其实是this.的方式调用的，事务想要生效，还得利用代理来生效，所以这个地方，我们需要获得原始的事务对象， 来操作事务
 
@@ -1930,7 +1923,7 @@ public void unlock() {
 
 **不可重试**：是指目前的分布式只能尝试一次，我们认为合理的情况是：当线程在获得锁失败后，他应该能再次尝试获得锁。
 
-**超时释放：**我们在加锁时增加了过期时间，这样的我们可以防止死锁，但是如果卡顿的时间超长，虽然我们采用了lua表达式防止删锁的时候，误删别人的锁，但是毕竟没有锁住，有安全隐患
+**超时释放：** 我们在加锁时增加了过期时间，这样的我们可以防止死锁，但是如果卡顿的时间超长，虽然我们采用了lua表达式防止删锁的时候，误删别人的锁，但是毕竟没有锁住，有安全隐患
 
 **主从一致性：** 如果Redis提供了主从集群，当我们向集群写数据时，主机需要异步的将数据同步给从机，而万一在同步过去之前，主机宕机了，就会出现死锁问题。
 
@@ -1994,12 +1987,8 @@ void testRedisson() throws Exception{
         }finally{
             //释放锁
             lock.unlock();
-        }
-        
-    }
-    
-    
-    
+        }   
+    } 
 }
 ```
 
@@ -2068,7 +2057,7 @@ public Result seckillVoucher(Long voucherId) {
 
 **ARGV[2]：  id + ":" + threadId; 锁的小key**
 
-exists: 判断数据是否存在  name：是lock是否存在,如果==0，就表示当前这把锁不存在
+exists: 判断数据是否存在  name：是lock是否存在,如果== 0，就表示当前这把锁不存在
 
 redis.call('hset', KEYS[1], ARGV[2], 1);此时他就开始往redis里边去写数据 ，写成一个hash结构
 
@@ -2127,7 +2116,7 @@ if (ttl == null) {
 }
 ```
 
-接下来会有一个条件分支，因为lock方法有重载方法，一个是带参数，一个是不带参数，如果带带参数传入的值是-1，如果传入参数，则leaseTime是他本身，所以如果传入了参数，此时leaseTime != -1 则会进去抢锁，抢锁的逻辑就是之前说的那三个逻辑
+接下来会有一个条件分支，因为lock方法有重载方法，一个是带参数，一个是不带参数，如果带参数传入的值是-1，如果传入参数，则leaseTime是他本身，所以如果传入了参数，此时leaseTime != -1 则会进去抢锁，抢锁的逻辑就是之前说的那三个逻辑
 
 ```java
 if (leaseTime != -1) {
@@ -2220,8 +2209,6 @@ private void renewExpiration() {
 
 当我们去设置了多个锁时，redission会将多个锁添加到一个集合中，然后用while循环去不停去尝试拿锁，但是会有一个总共的加锁时间，这个时间是用需要加锁的个数 * 1500ms ，假设有3个锁，那么时间就是4500ms，假设在这4500ms内，所有的锁都加锁成功， 那么此时才算是加锁成功，如果在4500ms有线程加锁失败，则会再次去进行重试.
 
-
-
 ![1653553093967](.\Redis实战篇.assets\1653553093967.png)
 
 ## 6、秒杀优化
@@ -2246,13 +2233,13 @@ private void renewExpiration() {
 
 在这六步操作中，又有很多操作是要去操作数据库的，而且还是一个线程串行执行， 这样就会导致我们的程序执行的很慢，所以我们需要异步程序执行，那么如何加速呢？
 
-在这里笔者想给大家分享一下课程内没有的思路，看看有没有小伙伴这么想，比如，我们可以不可以使用异步编排来做，或者说我开启N多线程，N多个线程，一个线程执行查询优惠卷，一个执行判断扣减库存，一个去创建订单等等，然后再统一做返回，这种做法和课程中有哪种好呢？答案是课程中的好，因为如果你采用我刚说的方式，如果访问的人很多，那么线程池中的线程可能一下子就被消耗完了，而且你使用上述方案，最大的特点在于，你觉得时效性会非常重要，但是你想想是吗？并不是，比如我只要确定他能做这件事，然后我后边慢慢做就可以了，我并不需要他一口气做完这件事，所以我们应当采用的是课程中，类似消息队列的方式来完成我们的需求，而不是使用线程池或者是异步编排的方式来完成这个需求
+在这里笔者想给大家分享一下课程内没有的思路，看看有没有小伙伴这么想，比如，我们可以不可以**使用异步编排来做，或者说我开启N多线程，N多个线程，一个线程执行查询优惠卷，一个执行判断扣减库存，一个去创建订单等等，然后再统一做返回**，这种做法和课程中有哪种好呢？答案是课程中的好，因为如果你采用我刚说的方式，如果访问的人很多，那么线程池中的线程可能一下子就被消耗完了，而且你**使用上述方案，最大的特点在于，你觉得时效性会非常重要，但是你想想是吗？并不是，比如我只要确定他能做这件事，然后我后边慢慢做就可以了，我并不需要他一口气做完这件事**，所以我们应当采用的是课程中，**类似消息队列的方式来完成我们的需求，而不是使用线程池或者是异步编排的方式来完成这个需求**
 
 ![1653560986599](.\Redis实战篇.assets\1653560986599.png)
 
 
 
-优化方案：我们将耗时比较短的逻辑判断放入到redis中，比如是否库存足够，比如是否一人一单，这样的操作，只要这种逻辑可以完成，就意味着我们是一定可以下单完成的，我们只需要进行快速的逻辑判断，根本就不用等下单逻辑走完，我们直接给用户返回成功， 再在后台开一个线程，后台线程慢慢的去执行queue里边的消息，这样程序不就超级快了吗？而且也不用担心线程池消耗殆尽的问题，因为这里我们的程序中并没有手动使用任何线程池，当然这里边有两个难点
+优化方案：我们将耗时比较短的逻辑判断放入到redis中，比如是否库存足够，比如是否一人一单，这样的操作，**只要这种逻辑可以完成，就意味着我们是一定可以下单完成的**，我们只需要进行快速的逻辑判断，根本就不用等下单逻辑走完，我们**直接给用户返回成功， 再在后台开一个线程，后台线程慢慢的去执行queue里边的消息**，这样程序不就超级快了吗？而且**也不用担心线程池消耗殆尽的问题，因为这里我们的程序中并没有手动使用任何线程池**，当然这里边有两个难点
 
 第一个难点是我们**怎么在redis中去快速校验一人一单，还有库存判断**
 
@@ -2380,7 +2367,6 @@ VoucherOrderServiceImpl
 ```java
 //异步处理线程池
 private static final ExecutorService SECKILL_ORDER_EXECUTOR = Executors.newSingleThreadExecutor();
-
 //在类初始化之后执行，因为当这个类初始化好了之后，随时都是有可能要执行的
 @PostConstruct
 private void init() {
@@ -2389,7 +2375,6 @@ private void init() {
 // 用于线程池处理的任务
 // 当初始化完毕后，就会去从对列中去拿信息
  private class VoucherOrderHandler implements Runnable{
-
         @Override
         public void run() {
             while (true){
@@ -2424,7 +2409,7 @@ private void init() {
                 // 释放锁
                 redisLock.unlock();
             }
-    }
+	    }
      //a
 	private BlockingQueue<VoucherOrder> orderTasks =new  ArrayBlockingQueue<>(1024 * 1024);
 
@@ -2483,9 +2468,8 @@ private void init() {
             return ;
         }
         save(voucherOrder);
- 
     }
-
+}
 ```
 
 **小总结：**
@@ -2512,7 +2496,7 @@ private void init() {
 
 ![1653574849336](.\Redis实战篇.assets\1653574849336.png)
 
-使用队列的好处在于 **解耦：**所谓解耦，举一个生活中的例子就是：快递员(生产者)把快递放到快递柜里边(Message Queue)去，我们(消费者)从快递柜里边去拿东西，这就是一个异步，如果耦合，那么这个快递员相当于直接把快递交给你，这事固然好，但是万一你不在家，那么快递员就会一直等你，这就浪费了快递员的时间，所以这种思想在我们日常开发中，是非常有必要的。
+使用队列的好处在于 **解耦：** 所谓解耦，举一个生活中的例子就是：快递员(生产者)把快递放到快递柜里边(Message Queue)去，我们(消费者)从快递柜里边去拿东西，这就是一个异步，如果耦合，那么这个快递员相当于直接把快递交给你，这事固然好，但是万一你不在家，那么快递员就会一直等你，这就浪费了快递员的时间，所以这种思想在我们日常开发中，是非常有必要的。
 
 这种场景在我们秒杀中就变成了：我们下单之后，利用redis去进行校验下单条件，再通过队列把消息发送出去，然后再启动一个线程去消费这个消息，完成解耦，同时也加快我们的响应速度。
 
@@ -2604,8 +2588,6 @@ STREAM类型消息队列的XREAD命令特点：
 * 一个消息可以被多个消费者读取
 * 可以阻塞读取
 * 有消息漏读的风险
-
-
 
 ### 7.5 Redis消息队列-基于Stream的消息队列-消费者组
 
@@ -3011,7 +2993,7 @@ public Result queryBlogLikes(Long id) {
         return Result.ok(Collections.emptyList());
     }
     // 2.解析出其中的用户id
-    List<Long> ids = top5.stream().map(Long:: valueOf).collect(Collectors.toList());
+    List<Long> ids = top5.stream().map(Long: : valueOf ) .collect(Collectors.toList());
     String idStr = StrUtil.join(",", ids);
     // 3.根据用户id查询用户 WHERE id IN ( 5 , 1 ) ORDER BY FIELD(id, 5, 1)
     List<UserDTO> userDTOS = userService.query()
@@ -3087,12 +3069,10 @@ public Result isFollow(Long followUserId) {
             follow.setUserId(userId);
             follow.setFollowUserId(followUserId);
             boolean isSuccess = save(follow);
-
         } else {
             // 3.取关，删除 delete from tb_follow where user_id = ? and follow_user_id = ?
             remove(new QueryWrapper<Follow>()
                     .eq("user_id", userId).eq("follow_user_id", followUserId));
-
         }
         return Result.ok();
     }
@@ -3226,7 +3206,7 @@ public Result followCommons(Long id) {
 
 Feed流的实现有两种模式：
 
-Feed流产品有两种常见模式：
+**Feed流产品有两种常见模式：**
 Timeline：不做内容筛选，简单的按照内容发布时间排序，常用于好友或关注。例如朋友圈
 
 * 优点：信息全面，不会有缺失。并且实现也相对简单
@@ -3240,7 +3220,7 @@ Timeline：不做内容筛选，简单的按照内容发布时间排序，常用
 
 我们本次针对好友的操作，采用的就是Timeline的方式，只需要拿到我们关注用户的信息，然后按照时间排序即可
 
-，因此采用Timeline的模式。该模式的实现方案有三种：
+，因此采用**Timeline的模式**。该模式的实现方案有三种：
 
 * 拉模式
 * 推模式
